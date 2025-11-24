@@ -242,6 +242,6 @@ Alur tersebut adalah alur umum yang berlaku untuk semua modul di aplikasi kita.
 
 # **PWS**
 
-[https://jovian-felix-ballistic.pbp.cs.ui.ac.id/](hhttps://jovian-felix-ballistic.pbp.cs.ui.ac.id/)
+[https://jovian-felix-ballistic.pbp.cs.ui.ac.id/](https://jovian-felix-ballistic.pbp.cs.ui.ac.id/)
 
 ---
