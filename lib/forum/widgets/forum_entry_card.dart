@@ -54,6 +54,9 @@ class ForumCard extends StatelessWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
         onTap: onTap,
+        hoverColor: const Color(0xFFF9FAFB),
+        splashColor: Colors.blue.withValues(alpha: 0.1), 
+        highlightColor: Colors.transparent,
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -84,9 +87,13 @@ class ForumCard extends StatelessWidget {
                 ),
               ),
 
-              const Spacer(),
+              const SizedBox(height: 16),
 
-              const Divider(height: 24),
+              const Divider(
+                height: 16,
+                thickness: 1,
+                color: Color(0xFFF3F4F6),
+              ),
 
               /// Author & last activity
               Column(

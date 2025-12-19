@@ -32,15 +32,15 @@ class ForumEntry {
     });
 
     factory ForumEntry.fromJson(Map<String, dynamic> json) => ForumEntry(
-        id: json["id"],
-        title: json["title"],
-        author: json["author"],
-        content: json["content"],
-        createdAt: DateTime.parse(json["created_at"]),
-        updatedAt: DateTime.parse(json["updated_at"]),
-        views: json["views"],
-        commentCount: json["comment_count"],
-        authorId: json["author_id"],
+      id: json["id"],
+      title: json["title"],
+      author: json["author"],
+      content: json["content"],
+      createdAt: DateTime.parse(json["created_at"]),
+      updatedAt: DateTime.parse(json["updated_at"]),
+      views: int.parse(json["views"].toString()),
+      commentCount: int.parse(json["comment_count"].toString()),
+      authorId: json["author_id"],
     );
 
     Map<String, dynamic> toJson() => {

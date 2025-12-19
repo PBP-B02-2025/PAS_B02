@@ -16,6 +16,13 @@ class _ForumFormPageState extends State<ForumFormPage> {
   final TextEditingController titleC = TextEditingController();
   final TextEditingController contentC = TextEditingController();
 
+  @override
+  void dispose() {
+    titleC.dispose();
+    contentC.dispose();
+    super.dispose();
+  }
+
   InputDecoration _formStyle(String label) {
   return InputDecoration(
     labelText: label,
@@ -135,7 +142,12 @@ class _ForumFormPageState extends State<ForumFormPage> {
                     Expanded(
                       child: ElevatedButton(
                         onPressed: () async {
-                          if (!_formKey.currentState!.validate()) return;
+                          if (!_formKey.currentState!.validate()) {
+                            return;
+                          }
+
+                          final messenger = ScaffoldMessenger.of(context);
+                          final navigator = Navigator.of(context);
 
                           final response = await request.postJson(
                             "http://localhost:8000/forum/create-forum-flutter/",
@@ -150,17 +162,18 @@ class _ForumFormPageState extends State<ForumFormPage> {
                           }
 
                           if (response['status'] == 'success') {
-                            ScaffoldMessenger.of(context).showSnackBar(
+                            messenger.showSnackBar(
                               const SnackBar(
                                 content: Text("Forum successfully created!"),
                               ),
                             );
-                            Navigator.pop(context);
+                            navigator.pop();
                           } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
+                            messenger.showSnackBar(
                               SnackBar(
                                 content: Text(
-                                    response['message'] ?? "Failed to create forum."),
+                                  response['message'] ?? "Failed to create forum.",
+                                ),
                               ),
                             );
                           }
@@ -181,7 +194,6 @@ class _ForumFormPageState extends State<ForumFormPage> {
                     ),
                   ],
                 ),
-
                 const SizedBox(height: 40),
               ],
             ),
