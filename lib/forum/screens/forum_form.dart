@@ -167,7 +167,7 @@ class _ForumFormPageState extends State<ForumFormPage> {
                                 content: Text("Forum successfully created!"),
                               ),
                             );
-                            navigator.pop();
+                            navigator.pop(true);
                           } else {
                             messenger.showSnackBar(
                               SnackBar(

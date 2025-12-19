@@ -1,5 +1,7 @@
 import 'package:ballistic/forum/screens/forum_form.dart';
+import 'package:ballistic/forum/widgets/forum_empty_state.dart';
 import 'package:ballistic/forum/widgets/forum_entry_card.dart';
+import 'package:ballistic/forum/widgets/forum_error_state.dart';
 import 'package:ballistic/forum/widgets/forum_toolbar.dart';
 import 'package:flutter/material.dart';
 import 'package:ballistic/forum/models/forum_entry.dart';
@@ -74,6 +76,15 @@ class _ForumListPage extends State<ForumListPage> {
             child: FutureBuilder(
               future: fetchForum(request),
               builder: (context,snapshot) {
+                if (snapshot.hasError) {
+                  return Center(
+                    child: ErrorStateForum(
+                      onRetry: () {
+                        setState(() {});
+                      },
+                    ),
+                  );
+                }
                 if (snapshot.data == null) {
                   return const Center(child: CircularProgressIndicator());
                 } else {
@@ -96,27 +107,63 @@ class _ForumListPage extends State<ForumListPage> {
                   });
 
                   if (displayedForums.isEmpty) {
-
-                  } else {
-                    return ListView.separated(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-                      itemCount: displayedForums.length,
-                      itemBuilder: (_, index) => ForumCard(
-                        item: displayedForums[index],
-                        onTap: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Successfully ${displayedForums[index].title}'),
+                    return RefreshIndicator(
+                      onRefresh: () async {
+                        setState(() {});
+                      },
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          return SingleChildScrollView(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            child: ConstrainedBox(
+                              constraints: BoxConstraints(
+                                minHeight: constraints.maxHeight, 
+                              ),
+                              child: Center(
+                                child: EmptyStateForum(
+                                  onActionPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) => const ForumFormPage()),
+                                    ).then((value) {
+                                      if (!mounted) {
+                                        return; 
+                                      }
+                                      if (value == true) {
+                                        setState(() {});
+                                      }
+                                    });
+                                  },
+                                ),
+                              ),
                             ),
                           );
-                        }
+                        },
                       ),
-                      separatorBuilder: (context, index) => const SizedBox(height: 24),
+                    );
+                  } else {
+                    return RefreshIndicator(
+                      onRefresh: () async {
+                        setState(() {});
+                      },
+                      child: ListView.separated(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+                        itemCount: displayedForums.length,
+                        itemBuilder: (_, index) => ForumCard(
+                          item: displayedForums[index],
+                          onTap: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Successfully ${displayedForums[index].title}'),
+                              ),
+                            );
+                          }
+                        ),
+                        separatorBuilder: (context, index) => const SizedBox(height: 24),
+                      )
                     );
                   }
-                  return Center(
-                    child: Text("berhasil"),
-                  );
                 }
               },
             ),
@@ -124,11 +171,15 @@ class _ForumListPage extends State<ForumListPage> {
         ]
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
+        onPressed: () async {
+          final refresh = await Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const ForumFormPage()),
           );
+
+          if (refresh == true) {
+            setState(() {});
+          }
         },
         backgroundColor: Colors.black,
         foregroundColor: Colors.white,
