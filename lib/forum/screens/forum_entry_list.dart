@@ -1,3 +1,4 @@
+import 'package:ballistic/forum/screens/forum_detail.dart';
 import 'package:ballistic/forum/screens/forum_form.dart';
 import 'package:ballistic/forum/widgets/forum_empty_state.dart';
 import 'package:ballistic/forum/widgets/forum_entry_card.dart';
@@ -50,6 +51,7 @@ class _ForumListPage extends State<ForumListPage> {
   Widget build(BuildContext context) {
     final request = context.watch<CookieRequest>();
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text(
           'Forum – Ballistic',
@@ -152,12 +154,19 @@ class _ForumListPage extends State<ForumListPage> {
                         itemCount: displayedForums.length,
                         itemBuilder: (_, index) => ForumCard(
                           item: displayedForums[index],
-                          onTap: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('Successfully ${displayedForums[index].title}'),
-                              ),
+                          onTap: () async {
+                            await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ForumDetailPage(
+                                  forumId: displayedForums[index].id,
+                                )
+                              )
                             );
+                            if (!mounted) {
+                              return;
+                            }
+                            setState(() {});
                           }
                         ),
                         separatorBuilder: (context, index) => const SizedBox(height: 24),

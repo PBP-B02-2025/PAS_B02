@@ -1,3 +1,4 @@
+import 'package:ballistic/forum/screens/forum_entry_list.dart';
 import 'package:flutter/material.dart';
 
 class MyHomePage extends StatelessWidget {
@@ -63,26 +64,31 @@ class MyHomePage extends StatelessWidget {
               ),
             ),
           ),
-          _drawerItem(context, 'HOME', true),
-          _drawerItem(context, 'SHOP', false),
-          _drawerItem(context, 'FORUM', false),
-          _drawerItem(context, 'NEWS', false),
-          _drawerItem(context, 'VOUCHER', false),
-          _drawerItem(context, 'ABOUT', false),
+          _drawerItem(context, 'HOME'),
+          _drawerItem(context, 'SHOP'),
+          _drawerItem(context, 'FORUM'),
+          _drawerItem(context, 'NEWS'),
+          _drawerItem(context, 'VOUCHER'),
+          _drawerItem(context, 'ABOUT'),
         ],
       ),
     );
   }
 
-  Widget _drawerItem(BuildContext context, String title, bool isHome) {
+  Widget _drawerItem(BuildContext context, String title) {
     return ListTile(
       title: Text(title, style: const TextStyle(fontWeight: FontWeight.w500)),
       onTap: () {
         Navigator.pop(context);
-        if (isHome) {
+        if (title == 'HOME') {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => const MyHomePage()),
+          );
+        } else if (title == 'FORUM') {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const ForumListPage())
           );
         }
       },
