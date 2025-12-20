@@ -6,6 +6,7 @@ import 'package:ballistic/forum/widgets/forum_empty_state.dart';
 import 'package:ballistic/forum/widgets/forum_entry_card.dart';
 import 'package:ballistic/forum/widgets/forum_error_state.dart';
 import 'package:ballistic/forum/widgets/forum_toolbar.dart';
+import 'package:ballistic/widgets/left_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:ballistic/forum/models/forum_entry.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
@@ -54,6 +55,7 @@ class _ForumListPage extends State<ForumListPage> {
     final request = context.watch<CookieRequest>();
     return Scaffold(
       backgroundColor: Colors.white,
+      drawer: LeftDrawer(),
       appBar: AppBar(
         title: const Text(
           'Forum – Ballistic',
