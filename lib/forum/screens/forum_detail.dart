@@ -56,7 +56,9 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
           ),
           ElevatedButton(
             onPressed: () async {
-              Navigator.pop(context);
+              final messenger = ScaffoldMessenger.of(context);
+              final navigator = Navigator.of(context);
+              navigator.pop(context);
               final response = await request.postJson(
                 "http://localhost:8000/forum/delete-comment-flutter/",
                 jsonEncode({"comment_id": commentId}),
@@ -66,11 +68,11 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
 
               if (response['status'] == 'success') {
                 _loadAllData();
-                ScaffoldMessenger.of(context).showSnackBar(
+                messenger.showSnackBar(
                   const SnackBar(content: Text("Comment successfully deleted!")),
                 );
               } else {
-                ScaffoldMessenger.of(context).showSnackBar(
+                messenger.showSnackBar(
                   SnackBar(content: Text(response['message'] ?? "Unauthorized or failed to delete.")),
                 );
               }
