@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:ballistic/screens/login.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
+import 'package:ballistic/utils/user_info.dart';
 
 class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key});
@@ -42,6 +43,8 @@ class MyHomePage extends StatelessWidget {
                   if (context.mounted) {
                     if (response['status']) {
                       String uname = response["username"];
+                      // Hapus informasi user dari SharedPreferences
+                      await UserInfo.clearUserInfo();
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           content: Text("$message See you again, $uname."),
                       ));
@@ -150,6 +153,8 @@ class MyHomePage extends StatelessWidget {
                   if (context.mounted) {
                     if (response['status']) {
                       String uname = response["username"];
+                      // Hapus informasi user dari SharedPreferences
+                      await UserInfo.clearUserInfo();
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           content: Text("$message See you again, $uname."),
                       ));

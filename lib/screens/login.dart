@@ -3,6 +3,7 @@ import 'package:ballistic/screens/register.dart';
 import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
+import 'package:ballistic/utils/user_info.dart';
 
 void main() {
   runApp(const LoginApp());
@@ -110,18 +111,26 @@ class _LoginPageState extends State<LoginPage> {
                       if (request.loggedIn) {
                         String message = response['message'];
                         String uname = response['username'];
+                        bool isSuperuser = response['is_superuser'] ?? false;
+                        bool isStaff = response['is_staff'] ?? false;
+
+                        // Simpan informasi user
+                        await UserInfo.saveUserInfo(uname, isSuperuser, isStaff);
+
                         if (context.mounted) {
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
                                 builder: (context) => MyHomePage()),
                           );
+                          
+                          String userType = isSuperuser ? " (Admin)" : "";
                           ScaffoldMessenger.of(context)
                             ..hideCurrentSnackBar()
                             ..showSnackBar(
                               SnackBar(
                                   content:
-                                      Text("$message Welcome, $uname.")),
+                                      Text("$message Welcome, $uname$userType.")),
                             );
                         }
                       } else {
