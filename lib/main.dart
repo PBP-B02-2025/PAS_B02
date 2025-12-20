@@ -1,10 +1,7 @@
-// import 'package:ballistic/forum/screens/forum_entry_list.dart';
-// import 'package:ballistic/forum/screens/forum_form.dart';
-import 'package:ballistic/screens/menu.dart';
 import 'package:flutter/material.dart';
+import 'package:ballistic/screens/login.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
-
 
 void main() {
   runApp(const MyApp());
@@ -30,8 +27,8 @@ class MyApp extends StatelessWidget {
             primary: const Color(0xFFC9A25B),
           ),
         ),
-        home: const MyHomePage(),
-      )
+        home: const LoginPage(),
+      ),
     );
   }
 }
