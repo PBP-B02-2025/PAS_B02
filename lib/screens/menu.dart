@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:ballistic/screens/login.dart';
+import 'package:pbp_django_auth/pbp_django_auth.dart';
+import 'package:provider/provider.dart';
 
 class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final request = context.watch<CookieRequest>();
     double screenWidth = MediaQuery.of(context).size.width;
     // Standar mobile biasanya di bawah 600-800 pixel
     bool isMobile = screenWidth < 800;
@@ -30,7 +34,29 @@ class MyHomePage extends StatelessWidget {
             centerTitle: true,
             actions: [
               IconButton(
-                onPressed: () {}, 
+                onPressed: () async {
+                  final response = await request.logout(
+                      "http://localhost:8000/auth/logout/");
+                  String message = response["message"];
+                  if (context.mounted) {
+                    if (response['status']) {
+                      String uname = response["username"];
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text("$message See you again, $uname."),
+                      ));
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (context) => const LoginPage()),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                              content: Text(message),
+                          ),
+                      );
+                    }
+                  }
+                }, 
                 icon: const Icon(Icons.login_outlined, size: 20)
               )
             ],
@@ -90,27 +116,56 @@ class MyHomePage extends StatelessWidget {
   }
 
   Widget _buildTopHeader() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: const [
-              Icon(Icons.camera_alt_outlined, size: 20),
-              SizedBox(width: 15),
-              Icon(Icons.discord, size: 20),
-              SizedBox(width: 15),
-              Icon(Icons.business, size: 20),
+    return Consumer<CookieRequest>(
+      builder: (context, request, child) {
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: const [
+                  Icon(Icons.camera_alt_outlined, size: 20),
+                  SizedBox(width: 15),
+                  Icon(Icons.discord, size: 20),
+                  SizedBox(width: 15),
+                  Icon(Icons.business, size: 20),
+                ],
+              ),
+              const Text(
+                'BALLISTIC',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, letterSpacing: 2),
+              ),
+              IconButton(
+                onPressed: () async {
+                  final response = await request.logout(
+                      "http://localhost:8000/auth/logout/");
+                  String message = response["message"];
+                  if (context.mounted) {
+                    if (response['status']) {
+                      String uname = response["username"];
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text("$message See you again, $uname."),
+                      ));
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (context) => const LoginPage()),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                              content: Text(message),
+                          ),
+                      );
+                    }
+                  }
+                },
+                icon: const Icon(Icons.login_outlined, size: 24),
+              ),
             ],
           ),
-          const Text(
-            'BALLISTIC',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, letterSpacing: 2),
-          ),
-          const Icon(Icons.login_outlined, size: 24),
-        ],
-      ),
+        );
+      },
     );
   }
 
