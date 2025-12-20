@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+// Import halaman Shop agar bisa navigasi ke sana
+import 'package:ballistic/shop/screen/shop.dart'; 
 
 class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key});
@@ -6,12 +8,10 @@ class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
-    // Standar mobile biasanya di bawah 600-800 pixel
     bool isMobile = screenWidth < 800;
 
     return Scaffold(
       backgroundColor: Colors.white,
-      // Drawer untuk navigasi mobile agar tidak overflow ke samping
       drawer: isMobile ? _buildDrawer(context) : null,
       appBar: isMobile 
         ? AppBar(
@@ -39,7 +39,6 @@ class MyHomePage extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Header desktop disembunyikan di mobile agar tidak rusak
             if (!isMobile) _buildTopHeader(),
             if (!isMobile) _buildNavbar(context),
             _buildHeroSection(context, isMobile),
@@ -78,12 +77,11 @@ class MyHomePage extends StatelessWidget {
     return ListTile(
       title: Text(title, style: const TextStyle(fontWeight: FontWeight.w500)),
       onTap: () {
-        Navigator.pop(context);
-        if (isHome) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const MyHomePage()),
-          );
+        Navigator.pop(context); // Tutup drawer
+        if (title == 'HOME') {
+           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MyHomePage()));
+        } else if (title == 'SHOP') {
+           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ShopPage()));
         }
       },
     );
@@ -135,10 +133,9 @@ class MyHomePage extends StatelessWidget {
     return InkWell(
       onTap: () {
         if (title == 'HOME') {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const MyHomePage()),
-          );
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MyHomePage()));
+        } else if (title == 'SHOP') {
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ShopPage()));
         }
       },
       child: Padding(
@@ -175,7 +172,6 @@ class MyHomePage extends StatelessWidget {
   Widget _buildHeroSection(BuildContext context, bool isMobile) {
     return Container(
       width: double.infinity,
-      // Menggunakan minHeight agar konten tidak terpotong saat layar sangat kecil
       constraints: BoxConstraints(
         minHeight: isMobile ? 350 : 500,
       ),
@@ -219,7 +215,9 @@ class MyHomePage extends StatelessWidget {
             ),
             const SizedBox(height: 30),
             ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ShopPage()));
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFC9A25B),
                 foregroundColor: Colors.white,
