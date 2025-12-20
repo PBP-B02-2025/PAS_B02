@@ -1,6 +1,6 @@
 // import 'package:ballistic/forum/screens/forum_entry_list.dart';
 // import 'package:ballistic/forum/screens/forum_form.dart';
-import 'package:ballistic/menu.dart';
+import 'package:ballistic/screens/menu.dart';
 import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
@@ -12,6 +12,7 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Provider(
@@ -20,11 +21,16 @@ class MyApp extends StatelessWidget {
         return request;
       },
       child: MaterialApp(
-          title: 'Ballistic',
-          theme: ThemeData(
-            colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.blue).copyWith(secondary: Colors.blueAccent[400]),
+        title: 'Ballistic',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          useMaterial3: true,
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color(0xFFC9A25B),
+            primary: const Color(0xFFC9A25B),
           ),
-          home: MyHomePage(),
+        ),
+        home: const MyHomePage(),
       )
     );
   }
