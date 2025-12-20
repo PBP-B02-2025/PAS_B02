@@ -20,7 +20,7 @@ class ErrorStateForum extends StatelessWidget {
         children: [
           const Text(
             "⚠️",
-            style: TextStyle(fontSize: 48), // Setara text-5xl
+            style: TextStyle(fontSize: 48),
           ),
           const SizedBox(height: 16),
           const Text(
@@ -28,7 +28,7 @@ class ErrorStateForum extends StatelessWidget {
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w500,
-              color: Color(0xFF111827), // text-gray-900
+              color: Color(0xFF111827),
             ),
           ),
           const SizedBox(height: 8),
@@ -37,7 +37,6 @@ class ErrorStateForum extends StatelessWidget {
             style: TextStyle(color: Color(0xFF6B7280)),
           ),
           const SizedBox(height: 16),
-          // Tambahkan tombol retry (optional tapi bagus untuk UX)
           TextButton(
             onPressed: onRetry,
             child: const Text("Try Again", style: TextStyle(color: Colors.blue)),

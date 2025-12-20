@@ -43,7 +43,7 @@ class ForumCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final updatedAt =
-        DateFormat('MMM dd, yyyy • HH:mm').format(item.updatedAt);
+        DateFormat('MMM dd, yyyy • HH:mm').format(item.updatedAt.toLocal());
 
     return Material(
       color: Colors.white,

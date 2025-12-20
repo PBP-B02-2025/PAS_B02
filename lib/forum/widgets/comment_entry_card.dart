@@ -83,7 +83,6 @@ class CommentCard extends StatelessWidget {
                 ),
               ),
               
-              // Action Buttons
               Row(
                 children: [
                   if (canEdit)
@@ -92,7 +91,8 @@ class CommentCard extends StatelessWidget {
                       color: Colors.blue,
                       onTap: onEdit,
                     ),
-                  if (canEdit && canDelete) const SizedBox(width: 8),
+                  if (canEdit && canDelete) 
+                    const SizedBox(width: 8),
                   if (canDelete)
                     _CircleActionBtn(
                       icon: Icons.delete_outline,

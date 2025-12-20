@@ -145,6 +145,11 @@ class MyHomePage extends StatelessWidget {
             context,
             MaterialPageRoute(builder: (context) => const MyHomePage()),
           );
+        } else if (title == 'FORUM') {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const ForumListPage()),
+          );
         }
       },
       child: Padding(

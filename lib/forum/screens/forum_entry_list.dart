@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:ballistic/forum/screens/forum_detail.dart';
 import 'package:ballistic/forum/screens/forum_form.dart';
 import 'package:ballistic/forum/widgets/forum_empty_state.dart';
@@ -100,11 +102,11 @@ class _ForumListPage extends State<ForumListPage> {
                   displayedForums.sort((a, b) {
                     switch (sort) {
                       case 'oldest':
-                        return a.createdAt.compareTo(b.createdAt);
+                        return a.updatedAt.compareTo(b.updatedAt);
                       case 'popular':
                         return b.views.compareTo(a.views);
                       default:
-                        return b.createdAt.compareTo(a.createdAt);
+                        return b.updatedAt.compareTo(a.updatedAt);
                     }
                   });
 
@@ -155,6 +157,13 @@ class _ForumListPage extends State<ForumListPage> {
                         itemBuilder: (_, index) => ForumCard(
                           item: displayedForums[index],
                           onTap: () async {
+                            await request.postJson(
+                              "http://localhost:8000/forum/increment-view-flutter/",
+                              jsonEncode({"forum_id": displayedForums[index].id}),
+                            );
+                            if (!mounted) {
+                              return;
+                            }
                             await Navigator.push(
                               context,
                               MaterialPageRoute(
