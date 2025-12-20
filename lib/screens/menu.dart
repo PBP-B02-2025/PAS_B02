@@ -13,29 +13,29 @@ class MyHomePage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       drawer: isMobile ? _buildDrawer(context) : null,
-      appBar: isMobile 
-        ? AppBar(
-            backgroundColor: Colors.white,
-            elevation: 0,
-            iconTheme: const IconThemeData(color: Colors.black),
-            title: const Text(
-              'BALLISTIC',
-              style: TextStyle(
-                color: Colors.black, 
-                fontWeight: FontWeight.bold, 
-                letterSpacing: 2,
-                fontSize: 16,
-              ),
-            ),
-            centerTitle: true,
-            actions: [
-              IconButton(
-                onPressed: () {}, 
-                icon: const Icon(Icons.login_outlined, size: 20)
-              )
-            ],
+      appBar: isMobile
+          ? AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.black),
+        title: const Text(
+          'BALLISTIC',
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 2,
+            fontSize: 16,
+          ),
+        ),
+        centerTitle: true,
+        actions: [
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(Icons.login_outlined, size: 20),
           )
-        : null,
+        ],
+      )
+          : null,
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -48,6 +48,7 @@ class MyHomePage extends StatelessWidget {
     );
   }
 
+  // --- DRAWER MOBILE (DENGAN SUB-MENU UNTUK SHOP) ---
   Widget _buildDrawer(BuildContext context) {
     return Drawer(
       child: ListView(
@@ -63,7 +64,34 @@ class MyHomePage extends StatelessWidget {
             ),
           ),
           _drawerItem(context, 'HOME', true),
-          _drawerItem(context, 'SHOP', false),
+
+          // ExpansionTile digunakan untuk membuat dropdown/sub-menu di mobile
+          ExpansionTile(
+            textColor: const Color(0xFFC9A25B),
+            iconColor: const Color(0xFFC9A25B),
+            title: const Text('SHOP', style: TextStyle(fontWeight: FontWeight.w500)),
+            childrenPadding: const EdgeInsets.only(left: 20),
+            children: [
+              ListTile(
+                title: const Text('Standard Shop', style: TextStyle(fontSize: 14)),
+                onTap: () {
+                  Navigator.pop(context);
+                  // Tambahkan navigasi ke shop standard jika sudah ada
+                },
+              ),
+              ListTile(
+                title: const Text('Size Recommendation', style: TextStyle(fontSize: 14)),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const UserMeasurementPage()),
+                  );
+                },
+              ),
+            ],
+          ),
+
           _drawerItem(context, 'FORUM', false),
           _drawerItem(context, 'NEWS', false),
           _drawerItem(context, 'VOUCHER', false),
@@ -87,6 +115,7 @@ class MyHomePage extends StatelessWidget {
     );
   }
 
+  // --- HEADER & NAVBAR DESKTOP ---
   Widget _buildTopHeader() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
@@ -119,7 +148,7 @@ class MyHomePage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           _navItem(context, 'HOME', isActive: true),
-          _navItem(context, 'SHOP', hasDropdown: true),
+          _navItem(context, 'SHOP', hasDropdown: true), // SHOP memiliki dropdown
           _navItem(context, 'FORUM'),
           _navItem(context, 'NEWS'),
           _navItem(context, 'VOUCHER'),
@@ -130,51 +159,84 @@ class MyHomePage extends StatelessWidget {
   }
 
   Widget _navItem(BuildContext context, String title, {bool isActive = false, bool hasDropdown = false}) {
-    return InkWell(
-      onTap: () {
-        if (title == 'HOME') {
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MyHomePage()));
-        } else if (title == 'SHOP') {
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ShopPage()));
-        }
-      },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 15),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
-                    color: isActive ? const Color(0xFFC9A25B) : Colors.grey[700],
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 15),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (hasDropdown && title == 'SHOP')
+          // Dropdown menggunakan PopupMenuButton untuk Desktop
+            PopupMenuButton<String>(
+              offset: const Offset(0, 30),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              child: Row(
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                      color: isActive ? const Color(0xFFC9A25B) : Colors.grey[700],
+                    ),
                   ),
-                ),
-                if (hasDropdown) const Icon(Icons.arrow_drop_down, size: 16),
-              ],
-            ),
-            if (isActive)
-              Container(
-                margin: const EdgeInsets.only(top: 4),
-                height: 1,
-                width: 25,
-                color: const Color(0xFFC9A25B),
+                  const Icon(Icons.arrow_drop_down, size: 16),
+                ],
               ),
-          ],
-        ),
+              onSelected: (value) {
+                if (value == 'size') {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const UserMeasurementPage()),
+                  );
+                }
+              },
+              itemBuilder: (context) => [
+                const PopupMenuItem(
+                  value: 'standard',
+                  child: Text('Standard Shop', style: TextStyle(fontSize: 13)),
+                ),
+                const PopupMenuItem(
+                  value: 'size',
+                  child: Text('Size Recommendation', style: TextStyle(fontSize: 13)),
+                ),
+              ],
+            )
+          else
+            InkWell(
+              onTap: () {
+                if (title == 'HOME') {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const MyHomePage()),
+                  );
+                }
+              },
+              child: Text(
+                title,
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                  color: isActive ? const Color(0xFFC9A25B) : Colors.grey[700],
+                ),
+              ),
+            ),
+          if (isActive)
+            Container(
+              margin: const EdgeInsets.only(top: 4),
+              height: 1,
+              width: 25,
+              color: const Color(0xFFC9A25B),
+            ),
+        ],
       ),
     );
   }
 
+  // --- HERO SECTION ---
   Widget _buildHeroSection(BuildContext context, bool isMobile) {
     return Container(
       width: double.infinity,
-      constraints: BoxConstraints(
-        minHeight: isMobile ? 350 : 500,
-      ),
+      constraints: BoxConstraints(minHeight: isMobile ? 350 : 500),
       decoration: BoxDecoration(
         image: DecorationImage(
           image: const NetworkImage('https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=2070'),
@@ -186,10 +248,7 @@ class MyHomePage extends StatelessWidget {
         ),
       ),
       child: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: isMobile ? 25 : 80,
-          vertical: 40
-        ),
+        padding: EdgeInsets.symmetric(horizontal: isMobile ? 25 : 80, vertical: 40),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: isMobile ? CrossAxisAlignment.center : CrossAxisAlignment.start,
@@ -199,7 +258,7 @@ class MyHomePage extends StatelessWidget {
               textAlign: isMobile ? TextAlign.center : TextAlign.left,
               style: TextStyle(
                 color: Colors.white,
-                fontSize: isMobile ? 24 : 44, 
+                fontSize: isMobile ? 24 : 44,
                 fontWeight: FontWeight.bold,
                 height: 1.2,
               ),
@@ -208,10 +267,7 @@ class MyHomePage extends StatelessWidget {
             Text(
               'Ballistic offers all categories of football merchandise, from jerseys to accessories.',
               textAlign: isMobile ? TextAlign.center : TextAlign.left,
-              style: TextStyle(
-                color: Colors.white70, 
-                fontSize: isMobile ? 13 : 16
-              ),
+              style: TextStyle(color: Colors.white70, fontSize: isMobile ? 13 : 16),
             ),
             const SizedBox(height: 30),
             ElevatedButton(
@@ -221,10 +277,7 @@ class MyHomePage extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFC9A25B),
                 foregroundColor: Colors.white,
-                padding: EdgeInsets.symmetric(
-                  horizontal: isMobile ? 25 : 35, 
-                  vertical: isMobile ? 15 : 20
-                ),
+                padding: EdgeInsets.symmetric(horizontal: isMobile ? 25 : 35, vertical: isMobile ? 15 : 20),
                 shape: const RoundedRectangleBorder(),
               ),
               child: const Text('See Collection', style: TextStyle(fontWeight: FontWeight.bold)),
