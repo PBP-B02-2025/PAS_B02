@@ -1,3 +1,4 @@
+import 'package:ballistic/features/user_measurement/screens/measurement_page.dart';
 import 'package:ballistic/forum/screens/forum_entry_list.dart';
 import 'package:flutter/material.dart';
 import 'package:ballistic/screens/menu.dart';
@@ -21,7 +22,34 @@ class LeftDrawer extends StatelessWidget {
             ),
           ),
           _drawerItem(context, 'HOME'),
-          _drawerItem(context, 'SHOP'),
+
+          // ExpansionTile digunakan untuk membuat dropdown/sub-menu di mobile
+          ExpansionTile(
+            textColor: const Color(0xFFC9A25B),
+            iconColor: const Color(0xFFC9A25B),
+            title: const Text('SHOP', style: TextStyle(fontWeight: FontWeight.w500)),
+            childrenPadding: const EdgeInsets.only(left: 20),
+            children: [
+              ListTile(
+                title: const Text('Standard Shop', style: TextStyle(fontSize: 14)),
+                onTap: () {
+                  Navigator.pop(context);
+                  // Tambahkan navigasi ke shop standard jika sudah ada
+                },
+              ),
+              ListTile(
+                title: const Text('Size Recommendation', style: TextStyle(fontSize: 14)),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const UserMeasurementPage()),
+                  );
+                },
+              ),
+            ],
+          ),
+
           _drawerItem(context, 'FORUM'),
           _drawerItem(context, 'NEWS'),
           _drawerItem(context, 'VOUCHER'),
