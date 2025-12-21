@@ -80,18 +80,20 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
     final dateString = DateFormat('EEEE, d MMM yyyy', 'id_ID').format(localDate);
     final timeString = DateFormat('HH:mm').format(localDate);
 
-    // Cek apakah ada voucher yang dipakai
     bool hasVoucher = transaction.appliedDiscountPercentage > 0;
+    
+    // Hitung Total Awal (Sebelum Diskon) untuk ditampilkan
+    int totalOriginal = transaction.originalProductPrice * transaction.quantity;
 
     return Column(
       children: [
-        // --- MAIN CARD ---
+        // --- BODY CARD ---
         Container(
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.vertical(
               top: const Radius.circular(20),
-              bottom: hasVoucher ? Radius.zero : const Radius.circular(20) // Jika ada voucher, bawahnya rata
+              bottom: hasVoucher ? Radius.zero : const Radius.circular(20)
             ),
             boxShadow: [
               BoxShadow(
@@ -103,7 +105,7 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
           ),
           child: Column(
             children: [
-              // Header: Waktu & Status
+              // Header: Tanggal & Status
               Padding(
                 padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
                 child: Row(
@@ -145,12 +147,13 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
               
               const Divider(height: 1, thickness: 0.5),
 
-              // Body: Produk
+              // Detail Produk
               Padding(
                 padding: const EdgeInsets.all(20),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Gambar
                     Container(
                       decoration: BoxDecoration(
                         boxShadow: [
@@ -171,6 +174,8 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                       ),
                     ),
                     const SizedBox(width: 16),
+                    
+                    // Info Teks
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -182,18 +187,23 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                             style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, height: 1.2),
                           ),
                           const SizedBox(height: 8),
+                          
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                // Harga asli sebelum diskon
-                                formatter.format(transaction.originalProductPrice),
-                                style: TextStyle(
-                                  color: hasVoucher ? Colors.red[300] : Colors.grey[600], 
-                                  fontSize: 13, 
-                                  decoration: hasVoucher ? TextDecoration.lineThrough : TextDecoration.none
-                                ),
+                              // Harga Satuan
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text("Harga Satuan", style: TextStyle(fontSize: 10, color: Colors.grey)),
+                                  Text(
+                                    "@ ${formatter.format(transaction.originalProductPrice)}",
+                                    style: TextStyle(color: ballisticBlack, fontSize: 13, fontWeight: FontWeight.w500),
+                                  ),
+                                ],
                               ),
+                              
+                              // Badge Quantity
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                                 decoration: BoxDecoration(
@@ -217,18 +227,19 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
           ),
         ),
 
-        // --- VOUCHER SECTION (The "Ticket Stub") ---
+        // --- VOUCHER & TOTAL SECTION ---
         if (hasVoucher)
           Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
             decoration: BoxDecoration(
-              color: const Color(0xFFFFF9E6), // Kuning sangat muda (Voucher feel)
+              color: const Color(0xFFFFF9E6), // Background kupon
               borderRadius: const BorderRadius.vertical(bottom: Radius.circular(20)),
               border: Border.all(color: ballisticGold.withOpacity(0.3)),
             ),
             child: Row(
               children: [
+                // Bagian Kiri: Info Voucher
                 Icon(Icons.discount, size: 20, color: ballisticGold),
                 const SizedBox(width: 12),
                 Expanded(
@@ -246,15 +257,33 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                     ],
                   ),
                 ),
-                Text(
-                  formatter.format(transaction.finalPrice),
-                  style: TextStyle(color: ballisticBlack, fontWeight: FontWeight.w900, fontSize: 18),
+                
+                // Bagian Kanan: Perhitungan Total
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    // Tampilkan Total Awal (Dicoret)
+                    Text(
+                      formatter.format(totalOriginal),
+                      style: TextStyle(
+                        fontSize: 12, 
+                        color: Colors.red.withOpacity(0.6), 
+                        decoration: TextDecoration.lineThrough,
+                        decorationColor: Colors.red.withOpacity(0.6)
+                      ),
+                    ),
+                    // Tampilkan Total Akhir (Bold)
+                    Text(
+                      formatter.format(transaction.finalPrice),
+                      style: TextStyle(color: ballisticBlack, fontWeight: FontWeight.w900, fontSize: 16),
+                    ),
+                  ],
                 ),
               ],
             ),
           )
         else 
-        // Kalau tidak ada voucher, tutup card dengan total harga biasa
+        // --- TOTAL BIASA (JIKA TANPA VOUCHER) ---
           Container(
              decoration: BoxDecoration(
               color: Colors.white,

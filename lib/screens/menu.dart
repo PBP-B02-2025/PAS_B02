@@ -4,10 +4,14 @@ import 'package:provider/provider.dart';
 import 'package:ballistic/screens/login.dart'; 
 import 'package:ballistic/utils/user_info.dart'; 
 
-// Import halaman-halaman fitur
+// --- IMPORT HALAMAN FITUR ---
 import 'package:ballistic/shop/screen/shop.dart'; 
 import 'package:ballistic/features/user_measurement/screens/measurement_page.dart';
-import 'package:ballistic/shop/screen/transaction_history.dart'; // Pastikan import ini ada
+import 'package:ballistic/shop/screen/transaction_history.dart';
+// Import baru untuk navigasi
+import 'package:ballistic/forum/screens/forum_entry_list.dart';
+import 'package:ballistic/screens/news/news_list.dart';
+import 'package:ballistic/voucher/screens/voucher_entry_list.dart';
 
 class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key});
@@ -90,7 +94,7 @@ class MyHomePage extends StatelessWidget {
         child: Column(
           children: [
             // Jika Desktop, tampilkan Header & Navbar khusus
-            if (!isMobile) _buildTopHeader(context, request), // <--- ERROR SEBELUMNYA DISINI
+            if (!isMobile) _buildTopHeader(context, request),
             if (!isMobile) _buildNavbar(context),
             
             // Hero Section (Gambar Besar)
@@ -102,7 +106,6 @@ class MyHomePage extends StatelessWidget {
   }
 
   // --- WIDGET HELPER (HEADER DESKTOP) ---
-  // Perbaikan: Menambahkan parameter (BuildContext context, CookieRequest request)
   Widget _buildTopHeader(BuildContext context, CookieRequest request) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
@@ -167,6 +170,7 @@ class MyHomePage extends StatelessWidget {
     );
   }
 
+  // --- NAV ITEM (NAVBAR LOGIC) ---
   Widget _navItem(BuildContext context, String title, {bool isActive = false, bool hasDropdown = false}) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -217,10 +221,31 @@ class MyHomePage extends StatelessWidget {
           else
             InkWell(
               onTap: () {
+                // --- LOGIKA NAVIGASI NAVBAR ---
                 if (title == 'HOME') {
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(builder: (context) => const MyHomePage()),
+                  );
+                } else if (title == 'FORUM') {
+                  Navigator.push(
+                    context, 
+                    MaterialPageRoute(builder: (context) => const ForumListPage())
+                  );
+                } else if (title == 'NEWS') {
+                  Navigator.push(
+                    context, 
+                    MaterialPageRoute(builder: (context) => const NewsListPage())
+                  );
+                } else if (title == 'VOUCHER') {
+                  Navigator.push(
+                    context, 
+                    MaterialPageRoute(builder: (context) => const VoucherEntryListPage())
+                  );
+                } else if (title == 'ABOUT') {
+                  // Karena belum ada halaman About, kita tampilkan pesan saja
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Halaman About belum tersedia.")),
                   );
                 }
               },
@@ -308,15 +333,25 @@ class MyHomePage extends StatelessWidget {
     );
   }
 
+  // --- DRAWER ITEM (MOBILE LOGIC) ---
   Widget _drawerItem(BuildContext context, String title, bool isHome) {
     return ListTile(
       title: Text(title, style: const TextStyle(fontWeight: FontWeight.w500)),
       onTap: () {
-        Navigator.pop(context);
+        Navigator.pop(context); // Tutup drawer dulu
+        
         if (title == 'HOME') {
            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const MyHomePage()));
-        } else if (title == 'SHOP') {
-           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const ShopPage()));
+        } else if (title == 'FORUM') {
+           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const ForumListPage()));
+        } else if (title == 'NEWS') {
+           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const NewsListPage()));
+        } else if (title == 'VOUCHER') {
+           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const VoucherEntryListPage()));
+        } else if (title == 'ABOUT') {
+           ScaffoldMessenger.of(context).showSnackBar(
+             const SnackBar(content: Text("Halaman About belum tersedia.")),
+           );
         }
       },
     );
