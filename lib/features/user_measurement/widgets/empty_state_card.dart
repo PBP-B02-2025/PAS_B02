@@ -25,14 +25,10 @@ class EmptyStateCard extends StatelessWidget {
           const SizedBox(height: 24),
           ElevatedButton(
             onPressed: () async {
-              // 1. Pindah ke halaman Form
               final result = await Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const MeasurementFormPage()),
               );
-
-              // 2. Jika kembali dari form (setelah simpan berhasil),
-              // jalankan onFillNow() untuk memicu refresh data dari backend
               if (result == true) {
                 onFillNow();
               }

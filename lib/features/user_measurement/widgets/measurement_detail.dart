@@ -15,9 +15,6 @@ class MeasurementDetailCard extends StatelessWidget {
     required this.onEdit,
   });
 
-  // =========================
-  // UTIL: cek data valid
-  // =========================
   bool _hasValue(dynamic v) {
     if (v == null) return false;
     if (v is num) return v != 0;
@@ -62,10 +59,6 @@ class MeasurementDetailCard extends StatelessWidget {
         ),
 
         const SizedBox(height: 24),
-
-        // =========================
-        // UKURAN TAMBAHAN (FIXED)
-        // =========================
         if (_hasValue(data['waist']) ||
             _hasValue(data['hip']) ||
             _hasValue(data['chest'])) ...[
@@ -201,9 +194,6 @@ class MeasurementDetailCard extends StatelessWidget {
     );
   }
 
-  // =========================
-  // HELPER UI (TIDAK DIUBAH)
-  // =========================
   Widget _buildSectionLabel(String text) => Padding(
     padding: const EdgeInsets.only(bottom: 10),
     child: Text(
