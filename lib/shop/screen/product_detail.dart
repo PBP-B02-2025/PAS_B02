@@ -27,6 +27,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   
   bool isOwner = false;
   String currentUsername = "";
+  bool isAdmin = false;
 
   @override
   void initState() {
@@ -36,10 +37,13 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
 
   Future<void> _checkOwnership() async {
     String username = await UserInfo.getUsername();
+    bool isSuperuser = await UserInfo.isSuperuser();
+    bool isStaff = await UserInfo.isStaff();
     if (mounted) {
       setState(() {
         currentUsername = username;
         isOwner = widget.product.owner == username;
+        isAdmin = isSuperuser || isStaff;
       });
     }
   }
@@ -317,7 +321,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               child: IconButton(icon: const Icon(Icons.arrow_back, color: Colors.black), onPressed: () => Navigator.pop(context)),
             ),
             actions: [
-               if (isOwner) 
+               if (isOwner || isAdmin) 
                 CircleAvatar(
                   backgroundColor: Colors.white.withOpacity(0.8),
                   child: IconButton(icon: const Icon(Icons.more_horiz, color: Colors.black), onPressed: () => _showOwnerMenu(context, request)),
@@ -497,7 +501,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           ),
         ],
       ),
-      bottomNavigationBar: !isOwner 
+      bottomNavigationBar: !isOwner && !isAdmin
         ? Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(color: Colors.white, boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -5))]),

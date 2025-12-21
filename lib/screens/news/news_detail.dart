@@ -31,7 +31,9 @@ void initState() {
     final news = widget.news;
     return Scaffold( // Scaffold untuk struktur halaman
       appBar: AppBar(
-        title: const Text('News Detail'),
+        title: const Text('News Detail', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        backgroundColor: const Color(0xFFC9A25B),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: SingleChildScrollView(
         child: Column(

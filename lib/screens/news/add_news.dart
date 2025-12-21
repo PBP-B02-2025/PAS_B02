@@ -52,7 +52,11 @@ class _AddNewsPageState extends State<AddNewsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Add News')),
+      appBar: AppBar(
+        title: const Text('Add News', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        backgroundColor: const Color(0xFFC9A25B),
+        iconTheme: const IconThemeData(color: Colors.white),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Form(
