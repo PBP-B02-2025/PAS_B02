@@ -40,7 +40,7 @@ Modul ini menampilkan ulasan pengguna terhadap produk peralatan olahraga yang di
 
 ### **2. Modul Forum — Mirza**
 
-Modul Forum berfungsi sebagai wadah interaksi antar pengguna untuk berdiskusi mengenai olahraga, produk, maupun tips penggunaan perlengkapan. Pengguna dapat membuat postingan baru, membaca diskusi dari pengguna lain, mengedit posting mereka, serta menghapus komentar atau topik yang tidak relevan. Pengguna juga dapat menghubungkan forum dengan produk yang dijual agar forum dapat terfokus pada pembahasan suatu produk. Forum ini juga dapat dimoderasi oleh admin untuk menjaga kenyamanan dan etika diskusi. Melalui fitur ini, Ballistic tidak hanya menjadi platform jual beli, tetapi juga komunitas bagi para pecinta olahraga.
+Modul Forum berfungsi sebagai wadah interaksi antar pengguna untuk berdiskusi mengenai olahraga, produk, maupun tips penggunaan perlengkapan. Pengguna dapat membuat postingan baru, membaca diskusi dari pengguna lain, mengedit posting mereka, serta menghapus komentar atau topik yang tidak relevan. Forum ini juga dapat dimoderasi oleh admin untuk menjaga kenyamanan dan etika diskusi. Melalui fitur ini, Ballistic tidak hanya menjadi platform jual beli, tetapi juga komunitas bagi para pecinta olahraga.
 
 ---
 
@@ -52,7 +52,7 @@ Modul ini digunakan untuk menyimpan data tinggi dan berat pengguna yang menjadi 
 
 ### **4. Modul Create News — Jovanus**
 
-Modul News hanya dapat diakses oleh admin dan berfungsi untuk mengelola berita resmi yang berkaitan dengan promosi, event olahraga, maupun pengumuman penting dari Ballistic. Admin dapat membuat, membaca, memperbarui, dan menghapus (CRUD) berita sesuai kebutuhan. Setiap berita akan muncul di halaman utama atau menu informasi pengguna, membantu menjaga komunikasi antara pihak toko dan pelanggan. Dengan adanya modul ini, platform selalu menampilkan informasi terbaru, relevan, dan profesional. Selain fungsi utama di atas, Modul News juga dilengkapi dengan fitur integrasi produk: Saat berita memiliki keterkaitan atau pembahasan mengenai produk tertentu, halaman detail berita tidak hanya menampilkan konten artikel, tetapi juga akan menyajikan rekomendasi produk terkait. Contoh: Jika berita berisi liputan seputar botol minum, maka detail berita akan memunculkan isi news tersebut disertai dengan daftar produk botol minum yang relevan.
+Modul News hanya dapat diakses oleh admin dan berfungsi untuk mengelola berita resmi yang berkaitan dengan promosi, event olahraga, maupun pengumuman penting dari Ballistic. Admin dapat membuat, membaca, memperbarui, dan menghapus (CRUD) berita sesuai kebutuhan. Setiap berita akan muncul di halaman utama atau menu informasi pengguna, membantu menjaga komunikasi antara pihak toko dan pelanggan. Dengan adanya modul ini, platform selalu menampilkan informasi terbaru, relevan, dan profesional. Selain itu nanti user akan bisa membaca seputar berita populer dan trend yang sedang ada belakangan ini. User nantinya juga bisa memilih kategori berita apa yang ingin dia baca 
 
 ---
 
