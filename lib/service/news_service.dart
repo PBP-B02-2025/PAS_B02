@@ -5,7 +5,7 @@ import '../models/news.dart';
 class NewsService {
   static const String baseUrl = 'http://127.0.0.1:8000/api/news/';
 
-static Future<List<News>> fetchNews({
+static Future<List<News>> fetchNews({// fetchNews
   String? category,
   bool popularOnly = false,
 }) async {
@@ -32,7 +32,7 @@ static Future<List<News>> fetchNews({
 }
 
 
-  static Future<void> addNews({
+  static Future<void> addNews({ // addNews
   required String title,
   required String author,
   required String content,
@@ -60,7 +60,7 @@ static Future<List<News>> fetchNews({
     throw Exception('Failed to add news');
   }
 }
-static Future<void> deleteNews(String id) async {
+static Future<void> deleteNews(String id) async { // deleteNews
   final response = await http.delete(
     Uri.parse('$baseUrl$id/'),
   );
@@ -68,7 +68,7 @@ static Future<void> deleteNews(String id) async {
   if (response.statusCode != 204 && response.statusCode != 200) {
     throw Exception('Failed to delete news');
   }
-}
+} // updateNews
 static Future<void> updateNews({
   required String id,
   required String title,

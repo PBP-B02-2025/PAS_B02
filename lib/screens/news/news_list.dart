@@ -45,15 +45,20 @@ class _NewsListPageState extends State<NewsListPage> {
         title: const Text('Delete News'),
         content: const Text('Are you sure you want to delete this news?'),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
+            TextButton(
             onPressed: () async {
               Navigator.pop(context);
               await NewsService.deleteNews(news.id);
               _refreshNews();
+
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('News berhasil dihapus'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
             },
             child: const Text(
               'Delete',
@@ -94,7 +99,7 @@ class _NewsListPageState extends State<NewsListPage> {
                 });
               },
             ),
-          // 🔽 FILTER CATEGORY
+          // FILTER CATEGORY
           PopupMenuButton<String>(
             icon: const Icon(Icons.filter_list),
             onSelected: (value) {
@@ -111,7 +116,7 @@ class _NewsListPageState extends State<NewsListPage> {
             ],
           ),
 
-          // ➕ ADD
+          //  ADD
           if (UserSession.isAdmin)
           IconButton(
             icon: const Icon(Icons.add),
@@ -121,10 +126,17 @@ class _NewsListPageState extends State<NewsListPage> {
                 MaterialPageRoute(builder: (_) => const AddNewsPage()),
               );
               _refreshNews();
+                ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('News berhasil ditambahkan'),
+                  backgroundColor: Colors.green,
+                ),
+              );
             },
+            
           ),
 
-          // 🔄 REFRESH
+          // REFRESH
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: _refreshNews,
@@ -244,17 +256,25 @@ class _NewsListPageState extends State<NewsListPage> {
                                               builder: (_) => EditNewsPage(news: newsItem),
                                             ),
                                           );
-                                          if (result == true) _refreshNews();
+                                          if (result == true) {
+                                            _refreshNews();
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              const SnackBar(
+                                                content: Text('News berhasil diupdate'),
+                                                backgroundColor: Colors.green,
+                                              ),
+                                            );
+                                          }
                                         },
                                       ),
-                                      IconButton(
+                                      IconButton( //tombol delete
                                         icon: const Icon(Icons.delete,
                                             size: 18, color: Colors.red),
                                         onPressed: () => _confirmDelete(newsItem),
                                       ),
                                     ],
 
-                                    if (newsItem.isFeatured)
+                                    if (newsItem.isFeatured) //buat popular
                                       Container(
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 8, vertical: 4),

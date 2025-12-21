@@ -48,7 +48,7 @@ class NewsDetailPage extends StatelessWidget {
                   ),
 
                   const SizedBox(height: 8),
-// Author dan Views
+              // Author dan Views
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [

@@ -52,7 +52,7 @@ class _EditNewsPageState extends State<EditNewsPage> {
         isFeatured: _isFeatured,
       );
 
-      Navigator.pop(context, true); // ⬅️ kasih tanda berhasil
+      Navigator.pop(context, true); // kasih tanda berhasil
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Failed to update news')),
@@ -61,6 +61,7 @@ class _EditNewsPageState extends State<EditNewsPage> {
 
     setState(() => _isLoading = false);
   }
+// build
 
   @override
   Widget build(BuildContext context) {
@@ -101,7 +102,7 @@ class _EditNewsPageState extends State<EditNewsPage> {
                 },
               ),
               SwitchListTile(
-                title: const Text('Mark as Popular'),
+                title: const Text('Tampilkan sebagai News Popular'),
                 value: _isFeatured,
                 onChanged: (v) => setState(() => _isFeatured = v),
               ),

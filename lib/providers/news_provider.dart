@@ -11,10 +11,10 @@ class NewsProvider extends ChangeNotifier {
 
   Future<void> fetchNews() async {
     _loading = true;
-    notifyListeners(); // 🟨 notify UI untuk loading
+    notifyListeners(); // notify UI untuk loading
     final result = await NewsService.fetchNews();
     _newsList = result;
     _loading = false;
-    notifyListeners(); // 🟩 notify UI untuk update data
+    notifyListeners(); // notify UI untuk update data
   }
 }

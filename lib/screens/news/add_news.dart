@@ -101,16 +101,16 @@ class _AddNewsPageState extends State<AddNewsPage> {
                 maxLines: 6,
                 validator: (v) => v!.isEmpty ? 'Required' : null,
               ),
-              SwitchListTile(
-  title: const Text('Berita Unggulan'),
-  subtitle: const Text('Centang jika berita ini adalah berita unggulan'),
-  value: _isFeatured,
-  onChanged: (value) {
-    setState(() {
-      _isFeatured = value;
-    });
-  },
-),
+                  SwitchListTile(
+                    title: const Text('Berita Unggulan'),
+                    subtitle: const Text('Centang jika berita ini adalah berita unggulan'),
+                    value: _isFeatured,
+                    onChanged: (value) {
+                      setState(() {
+                        _isFeatured = value;
+                      });
+                    },
+                  ),
 
               const SizedBox(height: 20),
               ElevatedButton(
