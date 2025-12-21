@@ -14,6 +14,11 @@
 link promosi: 
 https://www.youtube.com/watch?v=sP-yHNOVUkc
 
+
+Ballistic
+[![Build Status](https://app.bitrise.io/app/2b4eb0bb-1ec2-4230-abc6-5b3ad913bae5/status.svg?token=QgSgeQNn4UBE1nGMc8FbJg&branch=main)](https://app.bitrise.io/app/2b4eb0bb-1ec2-4230-abc6-5b3ad913bae5)
+## Download
+Download aplikasi versi terbaru: [Download APK](https://app.bitrise.io/app/2b4eb0bb-1ec2-4230-abc6-5b3ad913bae5/installable-artifacts/bf9d64c75e993693/public-install-page/e899e49866fe855733e9d93cbc6a18af)
 ---
 
 # **Deskripsi Aplikasi**
