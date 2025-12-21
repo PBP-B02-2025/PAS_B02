@@ -1,14 +1,51 @@
 import 'package:flutter/material.dart';
+import 'package:pbp_django_auth/pbp_django_auth.dart'; 
+import 'package:provider/provider.dart'; 
+import 'package:ballistic/screens/login.dart'; 
+import 'package:ballistic/utils/user_info.dart'; 
+
 // Import halaman Shop
 import 'package:ballistic/shop/screen/shop.dart'; 
 // Import halaman User Measurement
 import 'package:ballistic/features/user_measurement/screens/measurement_page.dart';
+// Import halaman History (PASTIKAN FILE INI SUDAH DIBUAT)
+import 'package:ballistic/shop/screen/transaction_history.dart';
 
 class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key});
 
+  // --- FUNGSI LOGOUT ---
+  Future<void> _handleLogout(BuildContext context, CookieRequest request) async {
+    const String logoutUrl = "http://localhost:8000/auth/logout/";
+    
+    final response = await request.logout(logoutUrl);
+    String message = response["message"];
+
+    if (context.mounted) {
+      if (response['status']) {
+        String uname = response["username"];
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("$message Sampai jumpa, $uname."),
+        ));
+        
+        await UserInfo.clearUserInfo();
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginPage()),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("Logout gagal: $message"),
+        ));
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final request = context.watch<CookieRequest>();
+    
     double screenWidth = MediaQuery.of(context).size.width;
     bool isMobile = screenWidth < 800;
 
@@ -31,9 +68,19 @@ class MyHomePage extends StatelessWidget {
         ),
         centerTitle: true,
         actions: [
+          // --- TOMBOL HISTORY (MOBILE) ---
           IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.login_outlined, size: 20),
+            onPressed: () {
+               Navigator.push(context, MaterialPageRoute(builder: (c) => const TransactionHistoryPage()));
+            },
+            icon: const Icon(Icons.receipt_long, size: 22, color: Colors.black),
+            tooltip: 'Transaction History',
+          ),
+          // --- TOMBOL LOGOUT (MOBILE) ---
+          IconButton(
+            onPressed: () => _handleLogout(context, request),
+            icon: const Icon(Icons.logout, size: 20, color: Colors.red), 
+            tooltip: 'Logout',
           )
         ],
       )
@@ -41,7 +88,7 @@ class MyHomePage extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            if (!isMobile) _buildTopHeader(),
+            if (!isMobile) _buildTopHeader(context, request),
             if (!isMobile) _buildNavbar(context),
             _buildHeroSection(context, isMobile),
           ],
@@ -50,7 +97,7 @@ class MyHomePage extends StatelessWidget {
     );
   }
 
-  // --- DRAWER MOBILE (DENGAN SUB-MENU UNTUK SHOP) ---
+  // --- DRAWER MOBILE ---
   Widget _buildDrawer(BuildContext context) {
     return Drawer(
       child: ListView(
@@ -67,30 +114,26 @@ class MyHomePage extends StatelessWidget {
           ),
           _drawerItem(context, 'HOME', true),
 
-          // ExpansionTile digunakan untuk membuat dropdown/sub-menu di mobile
           ExpansionTile(
             textColor: const Color(0xFFC9A25B),
             iconColor: const Color(0xFFC9A25B),
             title: const Text('SHOP', style: TextStyle(fontWeight: FontWeight.w500)),
             childrenPadding: const EdgeInsets.only(left: 20),
             children: [
-              // --- NAVIGASI STANDARD SHOP (MOBILE) ---
               ListTile(
                 title: const Text('Standard Shop', style: TextStyle(fontSize: 14)),
                 onTap: () {
-                  Navigator.pop(context); // Tutup Drawer
-                  // Pindah ke ShopPage
+                  Navigator.pop(context);
                   Navigator.pushReplacement(
                     context, 
                     MaterialPageRoute(builder: (context) => const ShopPage())
                   );
                 },
               ),
-              // --- NAVIGASI SIZE RECOMMENDATION (MOBILE) ---
               ListTile(
                 title: const Text('Size Recommendation', style: TextStyle(fontSize: 14)),
                 onTap: () {
-                  Navigator.pop(context); // Tutup Drawer
+                  Navigator.pop(context);
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const UserMeasurementPage()),
@@ -98,6 +141,14 @@ class MyHomePage extends StatelessWidget {
                 },
               ),
             ],
+          ),
+          // Tambahan menu History di Drawer juga
+           ListTile(
+            title: const Text('HISTORY', style: TextStyle(fontWeight: FontWeight.w500)),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(context, MaterialPageRoute(builder: (c) => const TransactionHistoryPage()));
+            },
           ),
 
           _drawerItem(context, 'FORUM', false),
@@ -113,7 +164,7 @@ class MyHomePage extends StatelessWidget {
     return ListTile(
       title: Text(title, style: const TextStyle(fontWeight: FontWeight.w500)),
       onTap: () {
-        Navigator.pop(context); // Tutup drawer
+        Navigator.pop(context);
         if (title == 'HOME') {
            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const MyHomePage()));
         } else if (title == 'SHOP') {
@@ -124,7 +175,7 @@ class MyHomePage extends StatelessWidget {
   }
 
   // --- HEADER & NAVBAR DESKTOP ---
-  Widget _buildTopHeader() {
+  Widget _buildTopHeader(BuildContext context, CookieRequest request) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
       child: Row(
@@ -143,7 +194,26 @@ class MyHomePage extends StatelessWidget {
             'BALLISTIC',
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, letterSpacing: 2),
           ),
-          const Icon(Icons.login_outlined, size: 24),
+          
+          Row(
+            children: [
+              // --- TOMBOL HISTORY (DESKTOP) ---
+              IconButton(
+                onPressed: () {
+                   Navigator.push(context, MaterialPageRoute(builder: (c) => const TransactionHistoryPage()));
+                },
+                icon: const Icon(Icons.receipt_long, size: 24, color: Colors.black),
+                tooltip: 'History',
+              ),
+              const SizedBox(width: 8),
+              // --- TOMBOL LOGOUT (DESKTOP) ---
+              IconButton(
+                onPressed: () => _handleLogout(context, request),
+                icon: const Icon(Icons.logout, size: 24, color: Colors.black),
+                tooltip: 'Logout',
+              ),
+            ],
+          ),
         ],
       ),
     );
@@ -156,7 +226,7 @@ class MyHomePage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           _navItem(context, 'HOME', isActive: true),
-          _navItem(context, 'SHOP', hasDropdown: true), // SHOP memiliki dropdown
+          _navItem(context, 'SHOP', hasDropdown: true),
           _navItem(context, 'FORUM'),
           _navItem(context, 'NEWS'),
           _navItem(context, 'VOUCHER'),
@@ -173,7 +243,6 @@ class MyHomePage extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           if (hasDropdown && title == 'SHOP')
-          // Dropdown menggunakan PopupMenuButton untuk Desktop
             PopupMenuButton<String>(
               offset: const Offset(0, 30),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -191,14 +260,12 @@ class MyHomePage extends StatelessWidget {
                 ],
               ),
               onSelected: (value) {
-                // --- LOGIKA NAVIGASI DROPDOWN DESKTOP ---
                 if (value == 'size') {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const UserMeasurementPage()),
                   );
                 } else if (value == 'standard') {
-                  // Navigasi ke Standard Shop
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const ShopPage()),
@@ -287,7 +354,6 @@ class MyHomePage extends StatelessWidget {
             const SizedBox(height: 30),
             ElevatedButton(
               onPressed: () {
-                  // Tombol 'See Collection' langsung ke ShopPage
                   Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const ShopPage()));
               },
               style: ElevatedButton.styleFrom(
