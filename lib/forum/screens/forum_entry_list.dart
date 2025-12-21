@@ -36,7 +36,7 @@ class _ForumListPage extends State<ForumListPage> {
   }
 
   Future<List<ForumEntry>> fetchForum(CookieRequest request) async {
-    final response = await request.get('http://localhost:8000/forum/json-forum/');
+    final response = await request.get('https://jovian-felix-ballistic.pbp.cs.ui.ac.id/forum/json-forum/');
 
     var data = response;
 
@@ -160,7 +160,7 @@ class _ForumListPage extends State<ForumListPage> {
                           item: displayedForums[index],
                           onTap: () async {
                             await request.postJson(
-                              "http://localhost:8000/forum/increment-view-flutter/",
+                              "https://jovian-felix-ballistic.pbp.cs.ui.ac.id/increment-view-flutter/",
                               jsonEncode({"forum_id": displayedForums[index].id}),
                             );
                             if (!mounted) {

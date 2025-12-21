@@ -49,7 +49,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   }
 
   String getBaseUrl() {
-    return kIsWeb ? "http://localhost:8000" : "http://10.0.2.2:8000";
+    return kIsWeb ? "https://jovian-felix-ballistic.pbp.cs.ui.ac.id" : "http://10.0.2.2:8000";
   }
 
   // ... (Fungsi _deleteProduct & _showOwnerMenu TETAP SAMA, tidak perlu diubah) ...

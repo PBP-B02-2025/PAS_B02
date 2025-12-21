@@ -1,5 +1,5 @@
 class Measurement {
-  final int? id; // Tambahkan ID untuk referensi database
+  final int? id;
   final double height;
   final double weight;
   final double? waist;
@@ -10,7 +10,7 @@ class Measurement {
   final String? helmetSize;
 
   Measurement({
-    this.id, // ID opsional karena saat create pertama kali belum ada ID
+    this.id,
     required this.height,
     required this.weight,
     this.waist,
@@ -21,10 +21,9 @@ class Measurement {
     this.helmetSize,
   });
 
-  // Untuk mengubah JSON dari Django menjadi Object Flutter
   factory Measurement.fromJson(Map<String, dynamic> json) {
     return Measurement(
-      id: json['id'], // Ambil ID dari backend
+      id: json['id'],
       height: json['height']?.toDouble() ?? 0.0,
       weight: json['weight']?.toDouble() ?? 0.0,
       waist: json['waist']?.toDouble(),
@@ -36,17 +35,17 @@ class Measurement {
     );
   }
 
-  // PENTING: Untuk mengubah Object Flutter menjadi JSON saat POST ke Django
   Map<String, dynamic> toJson() {
     return {
+      "id": id,
       "height": height,
       "weight": weight,
       "waist": waist,
       "hip": hip,
       "chest": chest,
       "head_circumference": headCircumference,
-      // clothesSize dan helmetSize biasanya dihitung di backend,
-      // tapi boleh disertakan jika perlu.
+      "clothes_size": clothesSize,
+      "helmet_size": helmetSize,
     };
   }
 }

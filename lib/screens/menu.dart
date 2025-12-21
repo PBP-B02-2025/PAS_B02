@@ -22,7 +22,7 @@ class MyHomePage extends StatelessWidget {
   // --- FUNGSI LOGOUT ---
   Future<void> _handleLogout(BuildContext context, CookieRequest request) async {
     // Sesuaikan URL dengan environment Anda (localhost / 10.0.2.2)
-    const String logoutUrl = "http://localhost:8000/auth/logout/";
+    const String logoutUrl = "https://jovian-felix-ballistic.pbp.cs.ui.ac.id/auth/logout/";
     
     final response = await request.logout(logoutUrl);
     String message = response["message"];

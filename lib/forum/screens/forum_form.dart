@@ -150,7 +150,7 @@ class _ForumFormPageState extends State<ForumFormPage> {
                           final navigator = Navigator.of(context);
 
                           final response = await request.postJson(
-                            "http://localhost:8000/forum/create-forum-flutter/",
+                            "https://jovian-felix-ballistic.pbp.cs.ui.ac.id/forum/create-forum-flutter/",
                             jsonEncode({
                               "title": titleC.text,
                               "content": contentC.text,

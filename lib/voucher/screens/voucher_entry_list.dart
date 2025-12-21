@@ -29,7 +29,7 @@ class _VoucherEntryListPageState extends State<VoucherEntryListPage> {
     // To connect Android emulator with Django on localhost, use URL http://10.0.2.2/
     // If you using chrome, use URL http://localhost:8000
     
-    final response = await request.get('http://localhost:8000/voucher/json/');
+    final response = await request.get('https://jovian-felix-ballistic.pbp.cs.ui.ac.id/voucher/json/');
     
     // Decode response to json format
     var data = response;
@@ -346,7 +346,7 @@ class _VoucherEntryListPageState extends State<VoucherEntryListPage> {
                           if (confirm == true && context.mounted) {
                             try {
                               final response = await request.post(
-                                "http://localhost:8000/voucher/delete-flutter/${voucher.id}/",
+                                "https://jovian-felix-ballistic.pbp.cs.ui.ac.id/voucher/delete-flutter/${voucher.id}/",
                                 {},
                               );
 
