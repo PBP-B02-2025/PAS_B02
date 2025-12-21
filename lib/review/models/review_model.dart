@@ -1,57 +1,59 @@
-/// Review Model
-/// 
-/// This model represents a review with author, description, and star rating.
-/// 
-/// Usage:
-/// ```dart
-/// import 'package:your_app/review/models/review_model.dart';
-/// ```
+import 'user_model.dart';
 
 class ReviewModel {
   final int? id;
-  final String author;
-  final String description;
-  final int star; // 0-5 rating
+  final User author;          // User object of the reviewer
+  final String description;   // Review content/comment
+  final int star;             // 0-5 rating
+  final int productId;        // ID of the product being reviewed
 
   ReviewModel({
     this.id,
     required this.author,
     required this.description,
     required this.star,
+    required this.productId,
   });
 
-  /// Factory constructor to create a ReviewModel from JSON
   factory ReviewModel.fromJson(Map<String, dynamic> json) {
     return ReviewModel(
       id: json['id'],
-      author: json['author'] ?? '',
-      description: json['description'] ?? '',
-      star: json['star'] ?? 0,
+      // Handle both nested user object or direct username string
+      author: json['user'] is Map 
+          ? User.fromJson(json['user']) 
+          : User(username: json['author'] ?? json['user'] ?? ''),
+      description: json['description'] ?? json['comment'] ?? '',
+      star: json['star'] ?? json['rating'] ?? 0,
+      // Handle both nested product object or direct product_id
+      productId: json['product'] is Map 
+          ? json['product']['id'] ?? 0 
+          : json['product_id'] ?? json['product'] ?? 0,
     );
   }
 
-  /// Convert ReviewModel to JSON for API requests
+  /// Convert ReviewModel to JSON for API requests (POST/PUT)
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
-      'author': author,
       'description': description,
       'star': star,
+      'product_id': productId,
     };
   }
 
   /// Create a copy with modified fields
   ReviewModel copyWith({
     int? id,
-    String? author,
+    User? author,
     String? description,
     int? star,
+    int? productId,
   }) {
     return ReviewModel(
       id: id ?? this.id,
       author: author ?? this.author,
       description: description ?? this.description,
       star: star ?? this.star,
+      productId: productId ?? this.productId,
     );
   }
 }

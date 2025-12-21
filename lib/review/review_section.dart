@@ -1,3 +1,23 @@
+/// Review Section Widget
+/// 
+/// A complete, modular review section for a SPECIFIC PRODUCT.
+/// Embed this widget in your product detail page to show reviews.
+/// 
+/// USAGE:
+/// ```dart
+/// ReviewSection(
+///   productId: product.id,  // Reviews will be fetched for this product
+///   currentUser: "username",
+///   onFetchReviews: (productId) async {
+///     // GET /api/reviews/?product_id=productId
+///   },
+///   onAddReview: (productId, description, star) async {
+///     // POST /api/reviews/ with product_id
+///   },
+///   ...
+/// )
+/// ```
+
 import 'package:flutter/material.dart';
 import 'models/review_model.dart';
 import 'widgets/review_list.dart';
@@ -6,9 +26,17 @@ import 'widgets/review_form.dart';
 class ReviewSection extends StatefulWidget {
   final int productId;
   final String? currentUser;
-  final Future<List<ReviewModel>> Function() onFetchReviews;
-  final Future<bool> Function(String description, int star)? onAddReview;
+  
+  /// Callback to fetch reviews for this product
+  final Future<List<ReviewModel>> Function(int productId) onFetchReviews;
+  
+  // Callback when user adds a new review
+  final Future<bool> Function(int productId, String description, int star)? onAddReview;
+  
+  // Callback when user edits their review
   final Future<bool> Function(int reviewId, String description, int star)? onEditReview;
+  
+  // Callback when user deletes their review
   final Future<bool> Function(int reviewId)? onDeleteReview;
 
   const ReviewSection({
@@ -36,6 +64,15 @@ class _ReviewSectionState extends State<ReviewSection> {
     _loadReviews();
   }
 
+  @override
+  void didUpdateWidget(ReviewSection oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Reload reviews if productId changes
+    if (oldWidget.productId != widget.productId) {
+      _loadReviews();
+    }
+  }
+
   Future<void> _loadReviews() async {
     setState(() {
       _isLoading = true;
@@ -43,7 +80,8 @@ class _ReviewSectionState extends State<ReviewSection> {
     });
 
     try {
-      final reviews = await widget.onFetchReviews();
+      // Fetch reviews for THIS specific product
+      final reviews = await widget.onFetchReviews(widget.productId);
       setState(() {
         _reviews = reviews;
         _isLoading = false;
@@ -60,7 +98,12 @@ class _ReviewSectionState extends State<ReviewSection> {
     if (widget.onAddReview == null) return;
 
     try {
-      final success = await widget.onAddReview!(description, star);
+      // Add review for THIS specific product
+      final success = await widget.onAddReview!(
+        widget.productId,
+        description,
+        star,
+      );
       if (success) {
         _showSnackBar('Review added successfully!');
         _loadReviews(); // Refresh the list
