@@ -251,8 +251,8 @@ class _VoucherFormModalState extends State<VoucherFormModal> {
 
                             try {
                               final url = isEditing
-                                  ? "http://localhost:8000/voucher/edit-flutter/${widget.voucher!.id}/"
-                                  : "http://localhost:8000/voucher/create-flutter/";
+                                  ? "https://jovian-felix-ballistic.pbp.cs.ui.ac.id/voucher/edit-flutter/${widget.voucher!.id}/"
+                                  : "https://jovian-felix-ballistic.pbp.cs.ui.ac.id/voucher/create-flutter/";
                               
                               final response = await request.postJson(
                                 url,

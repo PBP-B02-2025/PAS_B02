@@ -129,7 +129,7 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
     });
     final request = context.read<CookieRequest>();
     try {
-      final responseForum = await request.get("http://localhost:8000/forum/json-forum/${widget.forumId}");
+      final responseForum = await request.get("https://jovian-felix-ballistic.pbp.cs.ui.ac.id/forum/json-forum/${widget.forumId}");
       _commentsFuture = fetchComments(request, widget.forumId);
       if (mounted) {
         setState(() {
@@ -149,7 +149,7 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
 
   Future<List<CommentEntry>> fetchComments(CookieRequest request, String id) async {
     try {
-      final response = await request.get("http://localhost:8000/forum/json-comment/$id");
+      final response = await request.get("https://jovian-felix-ballistic.pbp.cs.ui.ac.id/forum/json-comment/$id");
       if (response is! List) {
         throw Exception("Invalid data format from server");
       }
@@ -170,7 +170,7 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
     final messenger = ScaffoldMessenger.of(context);
 
     final response = await request.postJson(
-      "http://localhost:8000/forum/create-comment-flutter/",
+      "https://jovian-felix-ballistic.pbp.cs.ui.ac.id/forum/create-comment-flutter/",
       jsonEncode({
         "forum_id": widget.forumId,
         "content": _commentController.text,
@@ -192,7 +192,7 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
     final navigator = Navigator.of(context);
 
     final response = await request.postJson(
-      "http://localhost:8000/forum/delete-forum-flutter/",
+      "https://jovian-felix-ballistic.pbp.cs.ui.ac.id/forum/delete-forum-flutter/",
       jsonEncode({"forum_id": widget.forumId}),
     );
 
@@ -259,7 +259,7 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
               child: ElevatedButton(
                 onPressed: () async {
                   final response = await request.postJson(
-                    "http://localhost:8000/forum/edit-comment-flutter/",
+                    "https://jovian-felix-ballistic.pbp.cs.ui.ac.id/forum/edit-comment-flutter/",
                     jsonEncode({"comment_id": comment.id, "content": editC.text}),
                   );
 
