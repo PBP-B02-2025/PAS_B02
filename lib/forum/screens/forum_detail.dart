@@ -86,37 +86,35 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
   }
 
   Widget _buildErrorState() {
-    return Center(
-      child: Padding(
+    return SingleChildScrollView(
+      physics: const AlwaysScrollableScrollPhysics(), 
+      child: Container(
+        height: MediaQuery.of(context).size.height * 0.7, 
+        alignment: Alignment.center,
         padding: const EdgeInsets.all(32.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center, 
           children: [
-            Icon(Icons.error_outline_rounded, size: 80, color: Colors.red[400]),
+            Icon(Icons.cloud_off_rounded, size: 80, color: Colors.grey[300]),
             const SizedBox(height: 24),
             const Text(
-              "Oops! Something went wrong",
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xFF111827)),
+              "Failed to load forum detail",
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 8),
             Text(
-              _errorMessage ?? "An unexpected error occurred.",
+              _errorMessage ?? "Check your internet connection.",
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 16, color: Color(0xFF6B7280)),
+              style: const TextStyle(color: Colors.grey),
             ),
-            const SizedBox(height: 32),
-            SizedBox(
-              width: 200,
-              child: ElevatedButton(
-                onPressed: _loadAllData,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                ),
-                child: const Text("Try Again", style: TextStyle(fontWeight: FontWeight.bold)),
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: _loadAllData,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.black,
+                foregroundColor: Colors.white,
               ),
+              child: const Text("Try Again"),
             ),
           ],
         ),
@@ -150,12 +148,21 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
   }
 
   Future<List<CommentEntry>> fetchComments(CookieRequest request, String id) async {
-    final response = await request.get("http://localhost:8000/forum/json-comment/$id");
-    List<CommentEntry> comments = [];
-    for (var d in response) {
-      if (d != null) comments.add(CommentEntry.fromJson(d));
+    try {
+      final response = await request.get("http://localhost:8000/forum/json-comment/$id");
+      if (response is! List) {
+        throw Exception("Invalid data format from server");
+      }
+
+      return response
+          .where((d) => d != null)
+          .map((d) => CommentEntry.fromJson(d))
+          .toList();
+          
+    } catch (e) {
+      debugPrint("Error Fetch Comments: $e");
+      throw Exception("Failed to connect.");
     }
-    return comments;
   }
 
   Future<void> _submitComment(CookieRequest request) async {
@@ -339,24 +346,201 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
     );
   }
 
+  Widget _buildMainContent(CookieRequest request) {
+    final createdAt = DateFormat('MMM dd, yyyy • HH:mm').format(currentForum!.createdAt.toLocal());
+    final updatedAt = DateFormat('MMM dd, yyyy • HH:mm').format(currentForum!.updatedAt.toLocal());
+
+    return Align(
+      alignment: Alignment.topCenter,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 800),
+        child: SingleChildScrollView(
+          controller: _scrollController,
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // --- FORUM DETAIL CARD ---
+              Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: Colors.white, borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: const Color(0xFFE5E7EB)),
+                  boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 15, offset: const Offset(0, 4))],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(currentForum!.title, style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Color(0xFF111827))),
+                    const SizedBox(height: 12),
+                    Wrap(spacing: 16, children: [
+                      _buildMetaItem(Icons.person_outline, currentForum!.author),
+                      _buildMetaItem(Icons.calendar_today_outlined, "Posted: $createdAt"),
+                      _buildMetaItem(Icons.update_outlined, "Updated: $updatedAt"),
+                      _buildMetaItem(Icons.visibility_outlined, "${currentForum!.views} views"),
+                    ]),
+                    const SizedBox(height: 32),
+                    Text(currentForum!.content, style: const TextStyle(fontSize: 16, height: 1.6, color: Color(0xFF374151))),
+                    const SizedBox(height: 24),
+                    _buildForumActions(request),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 32),
+
+              // --- COMMENTS LIST ---
+              FutureBuilder<List<CommentEntry>>(
+                future: _commentsFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 20),
+                      child: Center(child: CircularProgressIndicator(color: Colors.black)),
+                    );
+                  }
+                  if (snapshot.hasError) {
+                    return Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: const Color(0xFFE5E7EB)),
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.comments_disabled_outlined, size: 48, color: Color(0xFF9CA3AF)),
+                          const SizedBox(height: 16),
+                          const Text(
+                            "Failed to load comment",
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF111827)),
+                          ),
+                          const SizedBox(height: 4),
+                          const Text(
+                            "Something went wrong while retrieving the data.",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontSize: 14, color: Color(0xFF6B7280)),
+                          ),
+                          const SizedBox(height: 20),
+                          SizedBox(
+                            width: 140,
+                            child: OutlinedButton.icon(
+                              onPressed: () {
+                                setState(() {
+                                  _commentsFuture = fetchComments(request, widget.forumId);
+                                });
+                              },
+                              icon: const Icon(Icons.refresh_rounded, size: 18),
+                              label: const Text("Try Again"),
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: Colors.black,
+                                side: const BorderSide(color: Colors.black, width: 1.2),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                padding: const EdgeInsets.symmetric(vertical: 12),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+                  final List<CommentEntry> comments = snapshot.data ?? [];
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("Comment (${comments.length})", style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 16),
+                      if (comments.isEmpty) const SizedBox(height: 50) 
+                      else ListView.builder(
+                        shrinkWrap: true, physics: const NeverScrollableScrollPhysics(),
+                        itemCount: comments.length,
+                        itemBuilder: (context, index) => CommentCard(
+                          item: comments[index],
+                          currentUsername: request.jsonData['username'] ?? "",
+                          forumAuthor: currentForum!.author,
+                          isStaff: request.jsonData['is_staff'] ?? false,
+                          onEdit: () => _showEditCommentModal(request, comments[index]),
+                          onDelete: () => _showDeleteCommentConfirmation(request, comments[index].id),
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+
+              // --- ADD COMMENT FORM ---
+              const Text(
+                "Add Comment",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+
+              const SizedBox(height: 12),
+
+              TextField(
+                controller: _commentController,
+                focusNode: _commentFocusNode,
+                maxLines: 4,
+                decoration: InputDecoration(
+                  hintText: "Write your comment...",
+                  hintStyle: const TextStyle(color: Color(0xFF9CA3AF), fontSize: 14),
+                  fillColor: Colors.white,
+                  filled: true,
+                  hoverColor: Colors.transparent,
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: Color(0xFFE5E7EB), width: 1.5),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: Colors.black, width: 2.0),
+                  ),
+                  contentPadding: const EdgeInsets.all(16),
+                ),
+              ),
+
+              const SizedBox(height: 12),
+
+              // --- SEPARATE BUTTON (Rapat Kanan) ---
+              Align(
+                alignment: Alignment.centerRight,
+                child: ElevatedButton(
+                  onPressed: () => _submitComment(request),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    elevation: 0,
+                  ),
+                  child: const Text(
+                    "Post Comment",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 40),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final request = context.watch<CookieRequest>();
 
+    Widget bodyContent;
+
     if (_isLoading) {
-      return const Scaffold(
-        backgroundColor: Colors.white,
-        body: Center(child: CircularProgressIndicator(color: Colors.black)),
-      );
+      bodyContent = const Center(child: CircularProgressIndicator(color: Colors.black));
+    } else if (_errorMessage != null || currentForum == null) {
+      bodyContent = _buildErrorState();
+    } else {
+      bodyContent = _buildMainContent(request); 
     }
-
-    // TAMPILAN ERROR
-    if (_errorMessage != null || currentForum == null) {
-      return Scaffold(backgroundColor: Colors.white, body: _buildErrorState());
-    }
-
-    final createdAt = DateFormat('MMM dd, yyyy • HH:mm').format(currentForum!.createdAt.toLocal());
-    final updatedAt = DateFormat('MMM dd, yyyy • HH:mm').format(currentForum!.updatedAt.toLocal());
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -375,130 +559,7 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
         onRefresh: _loadAllData,
         color: Colors.black,
         backgroundColor: Colors.white,
-        child: Align(
-          alignment: Alignment.topCenter,
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 800),
-            child: SingleChildScrollView(
-              controller: _scrollController,
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // --- FORUM DETAIL CARD ---
-                  Container(
-                    padding: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                      color: Colors.white, borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: const Color(0xFFE5E7EB)),
-                      boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 15, offset: const Offset(0, 4))],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(currentForum!.title, style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Color(0xFF111827))),
-                        const SizedBox(height: 12),
-                        Wrap(spacing: 16, children: [
-                          _buildMetaItem(Icons.person_outline, currentForum!.author),
-                          _buildMetaItem(Icons.calendar_today_outlined, "Posted: $createdAt"),
-                          _buildMetaItem(Icons.update_outlined, "Updated: $updatedAt"),
-                          _buildMetaItem(Icons.visibility_outlined, "${currentForum!.views} views"),
-                        ]),
-                        const SizedBox(height: 32),
-                        Text(currentForum!.content, style: const TextStyle(fontSize: 16, height: 1.6, color: Color(0xFF374151))),
-                        const SizedBox(height: 24),
-                        _buildForumActions(request),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 32),
-
-                  // --- COMMENTS LIST ---
-                  FutureBuilder<List<CommentEntry>>(
-                    future: _commentsFuture,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) return const Center(child: CircularProgressIndicator());
-                      final List<CommentEntry> comments = snapshot.data ?? [];
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text("Comment (${comments.length})", style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                          const SizedBox(height: 16),
-                          if (comments.isEmpty) const SizedBox(height: 50) 
-                          else ListView.builder(
-                            shrinkWrap: true, physics: const NeverScrollableScrollPhysics(),
-                            itemCount: comments.length,
-                            itemBuilder: (context, index) => CommentCard(
-                              item: comments[index],
-                              currentUsername: request.jsonData['username'] ?? "",
-                              forumAuthor: currentForum!.author,
-                              isStaff: request.jsonData['is_staff'] ?? false,
-                              onEdit: () => _showEditCommentModal(request, comments[index]),
-                              onDelete: () => _showDeleteCommentConfirmation(request, comments[index].id),
-                            ),
-                          ),
-                        ],
-                      );
-                    },
-                  ),
-
-                  // --- ADD COMMENT FORM ---
-                  const Text(
-                    "Add Comment",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-
-                  const SizedBox(height: 12),
-
-                  TextField(
-                    controller: _commentController,
-                    focusNode: _commentFocusNode,
-                    maxLines: 4,
-                    decoration: InputDecoration(
-                      hintText: "Write your comment...",
-                      hintStyle: const TextStyle(color: Color(0xFF9CA3AF), fontSize: 14),
-                      fillColor: Colors.white,
-                      filled: true,
-                      hoverColor: Colors.transparent,
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: Color(0xFFE5E7EB), width: 1.5),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: Colors.black, width: 2.0),
-                      ),
-                      contentPadding: const EdgeInsets.all(16),
-                    ),
-                  ),
-
-                  const SizedBox(height: 12),
-
-                  // --- SEPARATE BUTTON (Rapat Kanan) ---
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: ElevatedButton(
-                      onPressed: () => _submitComment(request),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                        elevation: 0,
-                      ),
-                      child: const Text(
-                        "Post Comment",
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 40),
-                ],
-              ),
-            ),
-          ),
-        ),
+        child: bodyContent,
       ),
     );
   }
