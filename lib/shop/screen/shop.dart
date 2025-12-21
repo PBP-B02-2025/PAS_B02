@@ -7,6 +7,7 @@ import 'package:ballistic/screens/menu.dart';
 import 'package:ballistic/shop/screen/product_form.dart';
 import 'package:ballistic/shop/screen/product_detail.dart';
 import 'package:ballistic/utils/user_info.dart';
+import 'package:ballistic/widgets/left_drawer.dart';
 
 class ShopPage extends StatefulWidget {
   const ShopPage({super.key});
@@ -98,22 +99,20 @@ class _ShopPageState extends State<ShopPage> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F7),
+      // Menambahkan Drawer di sini
+      drawer: const LeftDrawer(),
       appBar: AppBar(
         title: const Text(
           'BALLISTIC SHOP',
           style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1.2, color: Colors.white),
         ),
         backgroundColor: const Color(0xFFC9A25B),
+        // Mengatur warna icon (termasuk tombol hamburger menu) menjadi putih
+        iconTheme: const IconThemeData(color: Colors.white),
         foregroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, size: 20, color: Colors.white),
-          onPressed: () {
-            Navigator.pushReplacement(
-                context, MaterialPageRoute(builder: (context) => const MyHomePage()));
-          },
-        ),
+        // Bagian leading dihapus agar tombol menu muncul otomatis
       ),
       floatingActionButton: !_isAdmin ? FloatingActionButton.extended(
         onPressed: () {
