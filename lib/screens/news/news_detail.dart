@@ -1,13 +1,34 @@
+import 'package:ballistic/models/news.dart';
+import 'package:ballistic/service/news_service.dart';
 import 'package:flutter/material.dart';
-import '../../models/news.dart';
- //buat bisa menampilkan halaman detail news
-class NewsDetailPage extends StatelessWidget {
+class NewsDetailPage extends StatefulWidget {
   final News news;
-
   const NewsDetailPage({super.key, required this.news});
 
   @override
+  State<NewsDetailPage> createState() => _NewsDetailPageState();
+}
+
+class _NewsDetailPageState extends State<NewsDetailPage> {
+int currentViews = 0;
+
+@override
+void initState() {
+  super.initState();
+  currentViews = widget.news.newsViews;
+  
+  NewsService.incrementViews(widget.news.id.toString()).then((_) {
+    if (mounted) {
+      setState(() {
+        currentViews++; 
+      });
+    }
+  });
+}
+
+  @override
   Widget build(BuildContext context) {
+    final news = widget.news;
     return Scaffold( // Scaffold untuk struktur halaman
       appBar: AppBar(
         title: const Text('News Detail'),
@@ -63,7 +84,7 @@ class NewsDetailPage extends StatelessWidget {
                         children: [
                           const Icon(Icons.visibility, size: 16),
                           const SizedBox(width: 4),
-                          Text('${news.newsViews} views'),
+                          Text('$currentViews views'),
                         ],
                       ),
                     ],

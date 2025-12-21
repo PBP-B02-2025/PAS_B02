@@ -5,6 +5,12 @@ import '../models/news.dart';
 class NewsService {
   static const String baseUrl = 'http://127.0.0.1:8000/api/news/';
 
+  static Future<void> incrementViews(String id) async {
+    await http.post(
+      Uri.parse('http://127.0.0.1:8000/api/news/$id/view/'),
+    );
+  }
+
 static Future<List<News>> fetchNews({// fetchNews
   String? category,
   bool popularOnly = false,
