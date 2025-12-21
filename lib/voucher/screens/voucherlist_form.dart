@@ -38,7 +38,7 @@ class _VoucherFormPageState extends State<VoucherFormPage> {
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            childregit : [
+            children: [
               // === Kode Voucher ===
               Padding(
                 padding: const EdgeInsets.all(8.0),
