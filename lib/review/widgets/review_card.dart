@@ -18,7 +18,7 @@ class ReviewCard extends StatelessWidget {
     this.showActions = true,
   });
 
-  bool get isOwner => currentUser != null && currentUser == review.author;
+  bool get isOwner => currentUser != null && currentUser == review.author.username;
 
   @override
   Widget build(BuildContext context) {
@@ -44,8 +44,8 @@ class ReviewCard extends StatelessWidget {
                       backgroundColor: Theme.of(context).primaryColor,
                       radius: 18,
                       child: Text(
-                        review.author.isNotEmpty
-                            ? review.author[0].toUpperCase()
+                        review.author.username.isNotEmpty
+                            ? review.author.username[0].toUpperCase()
                             : '?',
                         style: const TextStyle(
                           color: Colors.white,
@@ -55,7 +55,7 @@ class ReviewCard extends StatelessWidget {
                     ),
                     const SizedBox(width: 12),
                     Text(
-                      review.author,
+                      review.author.username,
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,

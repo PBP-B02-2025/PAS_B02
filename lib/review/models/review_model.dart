@@ -1,9 +1,11 @@
+import 'user_model.dart';
+
 class ReviewModel {
-  final int? id;
-  final String author;          // User object of the reviewer
-  final String description;   // Review content/comment
+  final String? id;           // UUID string from Django
+  final User author;          // User object of the reviewer
+  final String description;   // Review content/comment (Django uses 'comment')
   final int star;             // 0-5 rating
-  final int productId;        // ID of the product being reviewed
+  final String productId;     // ID of the product being reviewed
 
   ReviewModel({
     this.id,
@@ -13,38 +15,45 @@ class ReviewModel {
     required this.productId,
   });
 
+  /// Factory constructor to match Django API response:
+  /// {
+  ///   'id': 'uuid-string',
+  ///   'comment': 'review text',
+  ///   'star': 5,
+  ///   'user': 'username',
+  ///   'product_id': 'uuid-string' (optional)
+  /// }
   factory ReviewModel.fromJson(Map<String, dynamic> json) {
     return ReviewModel(
-      id: json['id'],
-      // Handle both nested user object or direct username string
+      id: json['id']?.toString(),
+      // Django returns 'user' as username string
       author: json['user'] is Map
-          ? ReviewModel.fromJson(json['user'])
-          : json['author'] ?? json['user'] ?? '',
-      description: json['description'] ?? json['comment'] ?? '',
+          ? User.fromJson(json['user'])
+          : User(username: json['user'] ?? json['author'] ?? ''),
+      // Django uses 'comment', Flutter UI uses 'description'
+      description: json['comment'] ?? json['description'] ?? '',
       star: json['star'] ?? json['rating'] ?? 0,
-      // Handle both nested product object or direct product_id
-      productId: json['product'] is Map 
-          ? json['product']['id'] ?? 0 
-          : json['product_id'] ?? json['product'] ?? 0,
+      // Handle product_id
+      productId: (json['product_id'] ?? json['product'] ?? '').toString(),
     );
   }
 
   /// Convert ReviewModel to JSON for API requests (POST/PUT)
+  /// Django expects 'comment' not 'description'
   Map<String, dynamic> toJson() {
     return {
-      'description': description,
+      'comment': description,
       'star': star,
-      'product_id': productId,
     };
   }
 
   /// Create a copy with modified fields
   ReviewModel copyWith({
-    int? id,
-    String? author,
+    String? id,
+    User? author,
     String? description,
     int? star,
-    int? productId,
+    String? productId,
   }) {
     return ReviewModel(
       id: id ?? this.id,

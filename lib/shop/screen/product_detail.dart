@@ -7,6 +7,8 @@ import 'package:ballistic/utils/user_info.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:ballistic/review/review.dart';
+
 
 class ProductDetailPage extends StatefulWidget {
   final Product product;
@@ -426,6 +428,114 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     widget.product.description,
                     style: TextStyle(fontSize: 15, color: Colors.grey[700], height: 1.6),
                   ),
+
+                  const SizedBox(height: 32),
+
+                  // ========== REVIEW SECTION ==========
+                  ReviewSection(
+                    productId: widget.product.id,
+                    currentUser: currentUsername,
+                    
+                    // Fetch reviews for this product
+                    // Django URL: GET /review/product/<uuid:product_id>/
+                    onFetchReviews: (productId) async {
+                      try {
+                        final response = await request.get(
+                          '${getBaseUrl()}/review/product/$productId/'
+                        );
+                        
+                        // Debug: print response to see what Django returns
+                        debugPrint('Fetch reviews response: $response');
+                        
+                        List<ReviewModel> reviews = [];
+                        
+                        // Handle case where response is null or error
+                        if (response == null) {
+                          return reviews;
+                        }
+                        
+                        // Handle case where response is a List directly
+                        if (response is List) {
+                          for (var r in response) {
+                            if (r != null) {
+                              reviews.add(ReviewModel.fromJson(r));
+                            }
+                          }
+                        } 
+                        // Handle case where response is a Map with 'reviews' key
+                        else if (response is Map) {
+                          if (response['reviews'] != null) {
+                            for (var r in response['reviews']) {
+                              if (r != null) {
+                                reviews.add(ReviewModel.fromJson(r));
+                              }
+                            }
+                          }
+                          // If success is true but no reviews, just return empty list
+                        }
+                        return reviews;
+                      } catch (e) {
+                        debugPrint('Error fetching reviews: $e');
+                        // Return empty list on error (including 404)
+                        return <ReviewModel>[];
+                      }
+                    },
+                    
+                    // Add review for this product
+                    // Django URL: POST /review/add-review/<uuid:product_id>/
+                    onAddReview: (productId, description, star) async {
+                      try {
+                        final response = await request.post(
+                          '${getBaseUrl()}/review/add-review/$productId/',
+                          {
+                            'comment': description,  // Django uses 'comment'
+                            'star': star.toString(),
+                          },
+                        );
+                        debugPrint('Add review response: $response');
+                        return response['success'] == true;
+                      } catch (e) {
+                        debugPrint('Error adding review: $e');
+                        return false;
+                      }
+                    },
+                    
+                    // Edit review
+                    // Django URL: POST /review/<uuid:id>/edit/
+                    onEditReview: (reviewId, description, star) async {
+                      try {
+                        final response = await request.post(
+                          '${getBaseUrl()}/review/$reviewId/edit/',
+                          {
+                            'comment': description,  // Django uses 'comment'
+                            'star': star.toString(),
+                          },
+                        );
+                        debugPrint('Edit review response: $response');
+                        return response['success'] == true;
+                      } catch (e) {
+                        debugPrint('Error editing review: $e');
+                        return false;
+                      }
+                    },
+                    
+                    // Delete review
+                    // Django URL: POST /review/<uuid:id>/delete/
+                    onDeleteReview: (reviewId) async {
+                      try {
+                        final response = await request.post(
+                          '${getBaseUrl()}/review/$reviewId/delete/',
+                          {},
+                        );
+                        debugPrint('Delete review response: $response');
+                        return response['success'] == true;
+                      } catch (e) {
+                        debugPrint('Error deleting review: $e');
+                        return false;
+                      }
+                    },
+                  ),
+                  // ========== END REVIEW SECTION ==========
                   
                   // Jarak extra di bawah supaya tidak tertutup tombol fixed
                   const SizedBox(height: 100), 

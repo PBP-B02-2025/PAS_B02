@@ -9,10 +9,8 @@ import 'package:ballistic/utils/user_info.dart';
 
 // Import halaman Shop
 import 'package:ballistic/shop/screen/shop.dart'; 
-// Import halaman User Measurement
-import 'package:ballistic/features/user_measurement/screens/measurement_page.dart';
-// Import halaman History (PASTIKAN FILE INI SUDAH DIBUAT)
-import 'package:ballistic/shop/screen/transaction_history.dart';
+
+import 'package:ballistic/screens/news/news_list.dart';
 
 class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key});
@@ -81,7 +79,7 @@ class MyHomePage extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            if (!isMobile) _buildTopHeader(context, request),
+            if (!isMobile) _buildTopHeader(),
             if (!isMobile) _buildNavbar(context),
             _buildHeroSection(context, isMobile),
           ],
@@ -182,20 +180,20 @@ class MyHomePage extends StatelessWidget {
           Row(
             children: [
               // --- TOMBOL HISTORY (DESKTOP) ---
-              IconButton(
-                onPressed: () {
-                   Navigator.push(context, MaterialPageRoute(builder: (c) => const TransactionHistoryPage()));
-                },
-                icon: const Icon(Icons.receipt_long, size: 24, color: Colors.black),
-                tooltip: 'History',
-              ),
-              const SizedBox(width: 8),
-              // --- TOMBOL LOGOUT (DESKTOP) ---
-              IconButton(
-                onPressed: () => _handleLogout(context, request),
-                icon: const Icon(Icons.logout, size: 24, color: Colors.black),
-                tooltip: 'Logout',
-              ),
+              // IconButton(
+              //   onPressed: () {
+              //      Navigator.push(context, MaterialPageRoute(builder: (c) => const TransactionHistoryPage()));
+              //   },
+              //   icon: const Icon(Icons.receipt_long, size: 24, color: Colors.black),
+              //   tooltip: 'History',
+              // ),
+              // const SizedBox(width: 8),
+              // // --- TOMBOL LOGOUT (DESKTOP) ---
+              // IconButton(
+              //   onPressed: () => _handleLogout(context, request),
+              //   icon: const Icon(Icons.logout, size: 24, color: Colors.black),
+              //   tooltip: 'Logout',
+              // ),
             ],
           ),
         ],

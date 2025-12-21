@@ -24,20 +24,21 @@ import 'widgets/review_list.dart';
 import 'widgets/review_form.dart';
 
 class ReviewSection extends StatefulWidget {
-  final int productId;
+  /// Product ID (String - UUID from Django)
+  final String productId;
   final String? currentUser;
   
   /// Callback to fetch reviews for this product
-  final Future<List<ReviewModel>> Function(int productId) onFetchReviews;
+  final Future<List<ReviewModel>> Function(String productId) onFetchReviews;
   
   // Callback when user adds a new review
-  final Future<bool> Function(int productId, String description, int star)? onAddReview;
+  final Future<bool> Function(String productId, String description, int star)? onAddReview;
   
-  // Callback when user edits their review
-  final Future<bool> Function(int reviewId, String description, int star)? onEditReview;
+  // Callback when user edits their review (reviewId is String UUID)
+  final Future<bool> Function(String reviewId, String description, int star)? onEditReview;
   
-  // Callback when user deletes their review
-  final Future<bool> Function(int reviewId)? onDeleteReview;
+  // Callback when user deletes their review (reviewId is String UUID)
+  final Future<bool> Function(String reviewId)? onDeleteReview;
 
   const ReviewSection({
     super.key,
