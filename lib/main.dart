@@ -1,8 +1,19 @@
+import 'package:ballistic/providers/news_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:ballistic/screens/menu.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   runApp(const MyApp());
+
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => NewsProvider(),
+      child: const MyApp(),
+    ),
+  );
+
+
 }
 
 class MyApp extends StatelessWidget {

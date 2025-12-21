@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ballistic/screens/news/news_list.dart';
 
 class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key});
@@ -139,6 +140,11 @@ class MyHomePage extends StatelessWidget {
             context,
             MaterialPageRoute(builder: (context) => const MyHomePage()),
           );
+        } else if (title == 'NEWS') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const NewsListPage()),
+          );
         }
       },
       child: Padding(
@@ -181,10 +187,10 @@ class MyHomePage extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         image: DecorationImage(
-          image: const NetworkImage('https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=2070'),
+          image: const NetworkImage('https://images.unsplash.com/photo-1521412644187-c49fa049e84d?w=800'),
           fit: BoxFit.cover,
           colorFilter: ColorFilter.mode(
-            Colors.black.withOpacity(0.5),
+            Color.fromRGBO(0, 0, 0, 0.5),
             BlendMode.darken,
           ),
         ),
