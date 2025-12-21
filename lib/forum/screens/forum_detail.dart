@@ -355,6 +355,7 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 800),
         child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
           controller: _scrollController,
           padding: const EdgeInsets.all(16.0),
           child: Column(

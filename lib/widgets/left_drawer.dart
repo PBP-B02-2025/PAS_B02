@@ -77,6 +77,11 @@ class LeftDrawer extends StatelessWidget {
             context,
             MaterialPageRoute(builder: (context) => const ForumListPage())
           );
+        } else if (title == 'NEWS') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const NewsListPage()),
+          );
         } else if (title == 'VOUCHER') {
           Navigator.pushReplacement(
             context,
