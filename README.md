@@ -11,6 +11,9 @@
 * Mirza Radithya Ramadhana 2406405563 
 * Jovanus Irwan Susanto 2406434140
 
+link promosi: 
+https://www.youtube.com/watch?v=sP-yHNOVUkc
+
 ---
 
 # **Deskripsi Aplikasi**
