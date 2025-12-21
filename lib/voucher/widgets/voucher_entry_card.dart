@@ -36,6 +36,18 @@ class VoucherEntryCard extends StatelessWidget {
     final paletteIndex = random.nextInt(gradientPalettes.length);
     final palette = gradientPalettes[paletteIndex];
     
+    // If voucher is inactive, use grayscale colors
+    if (!voucher.isActive) {
+      return const LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [
+          Color(0xFF9E9E9E), // Gray
+          Color(0xFF616161), // Dark Gray
+        ],
+      );
+    }
+    
     return LinearGradient(
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,
