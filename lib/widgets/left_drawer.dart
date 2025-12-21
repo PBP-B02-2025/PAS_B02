@@ -94,7 +94,7 @@ class LeftDrawer extends StatelessWidget {
                 tileColor: currentRoute == 'SIZE' ? const Color(0xFFC9A25B).withOpacity(0.1) : null,
                 onTap: () {
                   Navigator.pop(context);
-                  Navigator.push(
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(builder: (context) => const UserMeasurementPage()),
                   );
@@ -136,7 +136,7 @@ class LeftDrawer extends StatelessWidget {
             MaterialPageRoute(builder: (context) => const ForumListPage())
           );
         } else if (title == 'NEWS') {
-          Navigator.push(
+          Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => const NewsListPage()),
           );
@@ -146,12 +146,12 @@ class LeftDrawer extends StatelessWidget {
             MaterialPageRoute(builder: (context) => const VoucherEntryListPage())
           );
         } else if (title == 'PROFILE') {
-          Navigator.push(
+          Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => const ProfilePage()),
           );
         } else if (title == 'ABOUT') {
-          Navigator.push(
+          Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => const AboutPage()),
           );
