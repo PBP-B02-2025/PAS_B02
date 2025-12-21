@@ -165,13 +165,14 @@ class _NewsListPageState extends State<NewsListPage> {
               final newsItem = news[index];
 
               return InkWell(
-                onTap: () {
-                  Navigator.push(
+                onTap: () async {
+                  await Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (_) => NewsDetailPage(news: newsItem),
                     ),
                   );
+                  _refreshNews();
                 },
                 child: Card(
                   margin:

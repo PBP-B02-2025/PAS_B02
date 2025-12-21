@@ -1,23 +1,24 @@
-import 'package:ballistic/features/user_measurement/screens/measurement_page.dart';
-import 'package:ballistic/forum/screens/forum_entry_list.dart';
-import 'package:ballistic/voucher/screens/voucher_entry_list.dart';
-import 'package:ballistic/widgets/left_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart'; 
 import 'package:provider/provider.dart'; 
 import 'package:ballistic/screens/login.dart'; 
 import 'package:ballistic/utils/user_info.dart'; 
 
-// Import halaman Shop
+// --- IMPORT HALAMAN FITUR ---
 import 'package:ballistic/shop/screen/shop.dart'; 
-
+import 'package:ballistic/features/user_measurement/screens/measurement_page.dart';
+import 'package:ballistic/shop/screen/transaction_history.dart';
+// Import baru untuk navigasi
+import 'package:ballistic/forum/screens/forum_entry_list.dart';
 import 'package:ballistic/screens/news/news_list.dart';
+>>>>>>>>> Temporary merge branch 2
 
 class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key});
 
   // --- FUNGSI LOGOUT ---
   Future<void> _handleLogout(BuildContext context, CookieRequest request) async {
+    // Sesuaikan URL dengan environment Anda (localhost / 10.0.2.2)
     const String logoutUrl = "http://localhost:8000/auth/logout/";
     
     final response = await request.logout(logoutUrl);
@@ -53,35 +54,50 @@ class MyHomePage extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.white,
+      // Drawer hanya muncul di Mobile
       drawer: isMobile ? _buildDrawer(context) : null,
+      
+      // AppBar hanya muncul di Mobile
       appBar: isMobile
           ? AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.black),
-        title: const Text(
-          'BALLISTIC',
-          style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 2,
-            fontSize: 16,
-          ),
-        ),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.login_outlined, size: 20),
-          )
-        ],
-      )
+              backgroundColor: Colors.white,
+              elevation: 0,
+              iconTheme: const IconThemeData(color: Colors.black),
+              title: const Text(
+                'BALLISTIC',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 2,
+                  fontSize: 16,
+                ),
+              ),
+              centerTitle: true,
+              actions: [
+                IconButton(
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (c) => const TransactionHistoryPage()));
+                  },
+                  icon: const Icon(Icons.receipt_long, size: 22, color: Colors.black),
+                  tooltip: 'Transaction History',
+                ),
+                IconButton(
+                  onPressed: () => _handleLogout(context, request),
+                  icon: const Icon(Icons.logout, size: 20, color: Colors.red), 
+                  tooltip: 'Logout',
+                )
+              ],
+            )
           : null,
+      
       body: SingleChildScrollView(
         child: Column(
           children: [
-            if (!isMobile) _buildTopHeader(),
+            // Jika Desktop, tampilkan Header & Navbar khusus
+            if (!isMobile) _buildTopHeader(context, request),
             if (!isMobile) _buildNavbar(context),
+            
+            // Hero Section (Gambar Besar)
             _buildHeroSection(context, isMobile),
           ],
         ),
@@ -89,81 +105,14 @@ class MyHomePage extends StatelessWidget {
     );
   }
 
-  // --- DRAWER MOBILE (DENGAN SUB-MENU UNTUK SHOP) ---
-  Widget _buildDrawer(BuildContext context) {
-    return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: [
-          const DrawerHeader(
-            decoration: BoxDecoration(color: Color(0xFFC9A25B)),
-            child: Center(
-              child: Text(
-                'BALLISTIC',
-                style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
-          _drawerItem(context, 'HOME', true),
-
-          // ExpansionTile digunakan untuk membuat dropdown/sub-menu di mobile
-          ExpansionTile(
-            textColor: const Color(0xFFC9A25B),
-            iconColor: const Color(0xFFC9A25B),
-            title: const Text('SHOP', style: TextStyle(fontWeight: FontWeight.w500)),
-            childrenPadding: const EdgeInsets.only(left: 20),
-            children: [
-              ListTile(
-                title: const Text('Standard Shop', style: TextStyle(fontSize: 14)),
-                onTap: () {
-                  Navigator.pop(context);
-                  // Tambahkan navigasi ke shop standard jika sudah ada
-                },
-              ),
-              ListTile(
-                title: const Text('Size Recommendation', style: TextStyle(fontSize: 14)),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const UserMeasurementPage()),
-                  );
-                },
-              ),
-            ],
-          ),
-
-          _drawerItem(context, 'FORUM', false),
-          _drawerItem(context, 'NEWS', false),
-          _drawerItem(context, 'VOUCHER', false),
-          _drawerItem(context, 'ABOUT', false),
-        ],
-      ),
-    );
-  }
-
-  Widget _drawerItem(BuildContext context, String title, bool isHome) {
-    return ListTile(
-      title: Text(title, style: const TextStyle(fontWeight: FontWeight.w500)),
-      onTap: () {
-        Navigator.pop(context);
-        if (isHome) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const MyHomePage()),
-          );
-        }
-      },
-    );
-  }
-
-  // --- HEADER & NAVBAR DESKTOP ---
-  Widget _buildTopHeader() {
+  // --- WIDGET HELPER (HEADER DESKTOP) ---
+  Widget _buildTopHeader(BuildContext context, CookieRequest request) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+          // Icon Kiri
           Row(
             children: const [
               Icon(Icons.camera_alt_outlined, size: 20),
@@ -173,28 +122,29 @@ class MyHomePage extends StatelessWidget {
               Icon(Icons.business, size: 20),
             ],
           ),
+          
+          // Judul Tengah
           const Text(
             'BALLISTIC',
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, letterSpacing: 2),
           ),
           
+          // Tombol Kanan (History & Logout)
           Row(
             children: [
-              // --- TOMBOL HISTORY (DESKTOP) ---
-              // IconButton(
-              //   onPressed: () {
-              //      Navigator.push(context, MaterialPageRoute(builder: (c) => const TransactionHistoryPage()));
-              //   },
-              //   icon: const Icon(Icons.receipt_long, size: 24, color: Colors.black),
-              //   tooltip: 'History',
-              // ),
-              // const SizedBox(width: 8),
-              // // --- TOMBOL LOGOUT (DESKTOP) ---
-              // IconButton(
-              //   onPressed: () => _handleLogout(context, request),
-              //   icon: const Icon(Icons.logout, size: 24, color: Colors.black),
-              //   tooltip: 'Logout',
-              // ),
+              IconButton(
+                onPressed: () {
+                   Navigator.push(context, MaterialPageRoute(builder: (c) => const TransactionHistoryPage()));
+                },
+                icon: const Icon(Icons.receipt_long, size: 24, color: Colors.black),
+                tooltip: 'History',
+              ),
+              const SizedBox(width: 8),
+              IconButton(
+                onPressed: () => _handleLogout(context, request),
+                icon: const Icon(Icons.logout, size: 24, color: Colors.black),
+                tooltip: 'Logout',
+              ),
             ],
           ),
         ],
@@ -202,6 +152,7 @@ class MyHomePage extends StatelessWidget {
     );
   }
 
+  // --- WIDGET HELPER (NAVBAR DESKTOP) ---
   Widget _buildNavbar(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 10),
@@ -219,6 +170,7 @@ class MyHomePage extends StatelessWidget {
     );
   }
 
+  // --- NAV ITEM (NAVBAR LOGIC) ---
   Widget _navItem(BuildContext context, String title, {bool isActive = false, bool hasDropdown = false}) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -269,25 +221,31 @@ class MyHomePage extends StatelessWidget {
           else
             InkWell(
               onTap: () {
+                // --- LOGIKA NAVIGASI NAVBAR ---
                 if (title == 'HOME') {
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(builder: (context) => const MyHomePage()),
                   );
                 } else if (title == 'FORUM') {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => const ForumListPage()),
+                  Navigator.push(
+                    context, 
+                    MaterialPageRoute(builder: (context) => const ForumListPage())
                   );
                 } else if (title == 'NEWS') {
                   Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const NewsListPage()),
+                    context, 
+                    MaterialPageRoute(builder: (context) => const NewsListPage())
                   );
                 } else if (title == 'VOUCHER') {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => const VoucherEntryListPage()),
+                  Navigator.push(
+                    context, 
+                    MaterialPageRoute(builder: (context) => const VoucherEntryListPage())
+                  );
+                } else if (title == 'ABOUT') {
+                  // Karena belum ada halaman About, kita tampilkan pesan saja
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Halaman About belum tersedia.")),
                   );
                 }
               },
@@ -312,6 +270,93 @@ class MyHomePage extends StatelessWidget {
     );
   }
 
+  // --- DRAWER (MOBILE) ---
+  Widget _buildDrawer(BuildContext context) {
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          const DrawerHeader(
+            decoration: BoxDecoration(color: Color(0xFFC9A25B)),
+            child: Center(
+              child: Text(
+                'BALLISTIC',
+                style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+          _drawerItem(context, 'HOME', true),
+
+          ExpansionTile(
+            textColor: const Color(0xFFC9A25B),
+            iconColor: const Color(0xFFC9A25B),
+            title: const Text('SHOP', style: TextStyle(fontWeight: FontWeight.w500)),
+            childrenPadding: const EdgeInsets.only(left: 20),
+            children: [
+              ListTile(
+                title: const Text('Standard Shop', style: TextStyle(fontSize: 14)),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.pushReplacement(
+                    context, 
+                    MaterialPageRoute(builder: (context) => const ShopPage())
+                  );
+                },
+              ),
+              ListTile(
+                title: const Text('Size Recommendation', style: TextStyle(fontSize: 14)),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const UserMeasurementPage()),
+                  );
+                },
+              ),
+            ],
+          ),
+          
+          ListTile(
+            title: const Text('HISTORY', style: TextStyle(fontWeight: FontWeight.w500)),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(context, MaterialPageRoute(builder: (c) => const TransactionHistoryPage()));
+            },
+          ),
+
+          _drawerItem(context, 'FORUM', false),
+          _drawerItem(context, 'NEWS', false),
+          _drawerItem(context, 'VOUCHER', false),
+          _drawerItem(context, 'ABOUT', false),
+        ],
+      ),
+    );
+  }
+
+  // --- DRAWER ITEM (MOBILE LOGIC) ---
+  Widget _drawerItem(BuildContext context, String title, bool isHome) {
+    return ListTile(
+      title: Text(title, style: const TextStyle(fontWeight: FontWeight.w500)),
+      onTap: () {
+        Navigator.pop(context); // Tutup drawer dulu
+        
+        if (title == 'HOME') {
+           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const MyHomePage()));
+        } else if (title == 'FORUM') {
+           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const ForumListPage()));
+        } else if (title == 'NEWS') {
+           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const NewsListPage()));
+        } else if (title == 'VOUCHER') {
+           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const VoucherEntryListPage()));
+        } else if (title == 'ABOUT') {
+           ScaffoldMessenger.of(context).showSnackBar(
+             const SnackBar(content: Text("Halaman About belum tersedia.")),
+           );
+        }
+      },
+    );
+  }
+
   // --- HERO SECTION ---
   Widget _buildHeroSection(BuildContext context, bool isMobile) {
     return Container(
@@ -319,10 +364,10 @@ class MyHomePage extends StatelessWidget {
       constraints: BoxConstraints(minHeight: isMobile ? 350 : 500),
       decoration: BoxDecoration(
         image: DecorationImage(
-          image: const NetworkImage('https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=2070'),
+          image: const NetworkImage('https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?q=80&w=2000'),
           fit: BoxFit.cover,
           colorFilter: ColorFilter.mode(
-            Color.fromRGBO(0, 0, 0, 0.5),
+            Colors.black.withOpacity(0.5),
             BlendMode.darken,
           ),
         ),
