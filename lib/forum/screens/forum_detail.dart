@@ -548,12 +548,12 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
       appBar: AppBar(
         title: const Text(
           'Forum Detail', 
-          style: TextStyle(fontWeight: FontWeight.bold)
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)
         ),  
         iconTheme: const IconThemeData(
-          color: Colors.black,
+          color: Colors.white,
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: const Color(0xFFC9A25B),
         elevation: 1,
       ),
       body: RefreshIndicator(

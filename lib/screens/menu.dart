@@ -62,13 +62,13 @@ class MyHomePage extends StatelessWidget {
       // AppBar hanya muncul di Mobile
       appBar: isMobile
           ? AppBar(
-              backgroundColor: Colors.white,
+              backgroundColor: const Color(0xFFC9A25B),
               elevation: 0,
-              iconTheme: const IconThemeData(color: Colors.black),
+              iconTheme: const IconThemeData(color: Colors.white),
               title: const Text(
                 'BALLISTIC',
                 style: TextStyle(
-                  color: Colors.black,
+                  color: Colors.white,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 2,
                   fontSize: 16,
@@ -80,19 +80,19 @@ class MyHomePage extends StatelessWidget {
                   onPressed: () {
                     Navigator.push(context, MaterialPageRoute(builder: (c) => const ProfilePage()));
                   },
-                  icon: const Icon(Icons.person, size: 22, color: Colors.black),
+                  icon: const Icon(Icons.person, size: 22, color: Colors.white),
                   tooltip: 'Profile',
                 ),
                 IconButton(
                   onPressed: () {
                     Navigator.push(context, MaterialPageRoute(builder: (c) => const TransactionHistoryPage()));
                   },
-                  icon: const Icon(Icons.receipt_long, size: 22, color: Colors.black),
+                  icon: const Icon(Icons.receipt_long, size: 22, color: Colors.white),
                   tooltip: 'Transaction History',
                 ),
                 IconButton(
                   onPressed: () => _handleLogout(context, request),
-                  icon: const Icon(Icons.logout, size: 20, color: Colors.red), 
+                  icon: const Icon(Icons.logout, size: 20, color: Colors.white), 
                   tooltip: 'Logout',
                 )
               ],

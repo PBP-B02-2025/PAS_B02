@@ -75,11 +75,13 @@ class _NewsListPageState extends State<NewsListPage> {
     return Scaffold(
        drawer: const LeftDrawer(),
       appBar: AppBar(
-        title: const Text('News'),
+        title: const Text('News', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        backgroundColor: const Color(0xFFC9A25B),
+        iconTheme: const IconThemeData(color: Colors.white),
         automaticallyImplyLeading: false,
           leading: Builder(
     builder: (context) => IconButton(
-      icon: const Icon(Icons.menu),
+      icon: const Icon(Icons.menu, color: Colors.white),
       onPressed: () {
         Scaffold.of(context).openDrawer();
       },

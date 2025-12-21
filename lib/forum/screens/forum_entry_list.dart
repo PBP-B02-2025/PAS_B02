@@ -60,14 +60,14 @@ class _ForumListPage extends State<ForumListPage> {
         title: const Text(
           'Forum – Ballistic',
           style: TextStyle(
-            color: Colors.black,
+            color: Colors.white,
             fontWeight: FontWeight.bold,
           ),
         ),
         iconTheme: const IconThemeData(
-          color: Colors.black,
+          color: Colors.white,
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: const Color(0xFFC9A25B),
         elevation: 1,
       ),
       body: Column(

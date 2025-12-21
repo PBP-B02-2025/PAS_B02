@@ -87,14 +87,14 @@ class _ProfilePageState extends State<ProfilePage> {
             label,
             style: const TextStyle(
               fontSize: 14,
-              color: Colors.grey,
+              color: Color(0xFF666666), // Medium Gray
             ),
           ),
           badge ?? Text(
             value,
             style: const TextStyle(
               fontSize: 14,
-              color: Colors.black87,
+              color: Color(0xFF333333), // Dark Gray
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -105,20 +105,83 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Widget _buildBadge(String text, Color color) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
       decoration: BoxDecoration(
-        color: color,
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            const Color(0xFF000000), // Black
+            color, // Gold or custom color
+          ],
+        ),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(
         text,
         style: const TextStyle(
           color: Colors.white,
-          fontSize: 12,
-          fontWeight: FontWeight.bold,
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
         ),
       ),
     );
+  }
+
+  Widget _buildStatusBadge(bool isAdmin) {
+    if (isAdmin) {
+      // Admin Badge with gold gradient
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color(0xFFCDA34F), // Gold
+              Color(0xFFD4AF37), // Bright Gold
+            ],
+          ),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: const Text(
+          '⭐ ADMIN',
+          style: TextStyle(
+            color: Color(0xFF000000), // Black text
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      );
+    } else {
+      // User Badge with black gradient and gold border
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color(0xFF000000), // Black
+              Color(0xFF333333), // Dark Gray
+            ],
+          ),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: const Color(0xFFCDA34F), // Gold border
+            width: 1,
+          ),
+        ),
+        child: const Text(
+          '👤 USER',
+          style: TextStyle(
+            color: Color(0xFFCDA34F), // Gold text
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      );
+    }
   }
 
   @override
@@ -148,14 +211,16 @@ class _ProfilePageState extends State<ProfilePage> {
                   // Header Section
                   Container(
                     width: double.infinity,
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       gradient: LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                         colors: [
-                          const Color(0xFFC9A25B),
-                          const Color(0xFFE8D4A0),
+                          Color(0xFF000000), // Black
+                          Color(0xFF333333), // Dark Gray
+                          Color(0xFFCDA34F), // Gold
                         ],
+                        stops: [0.0, 0.5, 1.0],
                       ),
                     ),
                     padding: const EdgeInsets.symmetric(vertical: 40.0),
@@ -163,20 +228,28 @@ class _ProfilePageState extends State<ProfilePage> {
                       children: [
                         // Avatar
                         Container(
-                          width: 100,
-                          height: 100,
+                          width: 120,
+                          height: 120,
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: Colors.white.withValues(alpha: 0.3), // rgba(255, 255, 255, 0.3)
                             shape: BoxShape.circle,
-                            border: Border.all(color: Colors.white, width: 3),
+                            border: Border.all(color: Colors.white, width: 4),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.2),
+                                blurRadius: 20,
+                                offset: const Offset(0, 5),
+                              ),
+                            ],
                           ),
                           child: Center(
                             child: Text(
                               username.substring(0, 2).toUpperCase(),
                               style: const TextStyle(
-                                fontSize: 36,
+                                fontSize: 48,
                                 fontWeight: FontWeight.bold,
-                                color: Color(0xFFC9A25B),
+                                color: Colors.white,
+                                letterSpacing: 2,
                               ),
                             ),
                           ),
@@ -215,7 +288,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black87,
+                            color: Color(0xFF333333), // Dark Gray
                           ),
                         ),
                         const SizedBox(height: 16),
@@ -226,7 +299,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             borderRadius: BorderRadius.circular(12),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.grey.withOpacity(0.1),
+                                color: Colors.grey.withValues(alpha: 0.1),
                                 spreadRadius: 1,
                                 blurRadius: 5,
                                 offset: const Offset(0, 2),
@@ -246,10 +319,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               _buildInfoRow(
                                 'Status:',
                                 '',
-                                badge: _buildBadge(
-                                  (isAdmin || isStaff) ? 'ADMIN' : 'USER',
-                                  const Color(0xFFC9A25B),
-                                ),
+                                badge: _buildStatusBadge(isAdmin || isStaff),
                               ),
                             ],
                           ),
@@ -262,7 +332,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black87,
+                            color: Color(0xFF333333), // Dark Gray
                           ),
                         ),
                         const SizedBox(height: 16),
@@ -273,7 +343,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             borderRadius: BorderRadius.circular(12),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.grey.withOpacity(0.1),
+                                color: Colors.grey.withValues(alpha: 0.1),
                                 spreadRadius: 1,
                                 blurRadius: 5,
                                 offset: const Offset(0, 2),
@@ -303,7 +373,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                       '',
                                       badge: _buildBadge(
                                         measurementData!['clothes_size']?.toString() ?? '-',
-                                        const Color(0xFF8B7355),
+                                        const Color(0xFFCDA34F), // Gold
                                       ),
                                     ),
                                     const Divider(),
@@ -312,7 +382,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                       '',
                                       badge: _buildBadge(
                                         measurementData!['helmet_size']?.toString() ?? '-',
-                                        const Color(0xFF8B7355),
+                                        const Color(0xFFCDA34F), // Gold
                                       ),
                                     ),
                                   ],
@@ -335,19 +405,19 @@ class _ProfilePageState extends State<ProfilePage> {
                           child: ElevatedButton(
                             onPressed: () => _handleLogout(context, request),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              foregroundColor: const Color(0xFFC9A25B),
-                              side: const BorderSide(color: Color(0xFFC9A25B)),
+                              backgroundColor: const Color(0xFF000000), // Black
+                              foregroundColor: Colors.white,
                               padding: const EdgeInsets.symmetric(vertical: 16),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),
                               ),
+                              elevation: 0,
                             ),
                             child: const Text(
                               'Logout',
                               style: TextStyle(
                                 fontSize: 16,
-                                fontWeight: FontWeight.bold,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                           ),

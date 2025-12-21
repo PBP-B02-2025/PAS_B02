@@ -6,6 +6,7 @@ import 'package:ballistic/shop/models/product.dart';
 import 'package:ballistic/screens/menu.dart';
 import 'package:ballistic/shop/screen/product_form.dart';
 import 'package:ballistic/shop/screen/product_detail.dart';
+import 'package:ballistic/utils/user_info.dart';
 
 class ShopPage extends StatefulWidget {
   const ShopPage({super.key});
@@ -28,11 +29,23 @@ class _ShopPageState extends State<ShopPage> {
   List<String> _categories = [];
   String _selectedCategory = 'All Products';
   bool _isLoading = true;
+  bool _isAdmin = false;
 
   @override
   void initState() {
     super.initState();
+    _checkAdmin();
     fetchProducts();
+  }
+
+  Future<void> _checkAdmin() async {
+    bool isAdmin = await UserInfo.isSuperuser();
+    bool isStaff = await UserInfo.isStaff();
+    if (mounted) {
+      setState(() {
+        _isAdmin = isAdmin || isStaff;
+      });
+    }
   }
 
   Future<void> fetchProducts() async {
@@ -88,21 +101,21 @@ class _ShopPageState extends State<ShopPage> {
       appBar: AppBar(
         title: const Text(
           'BALLISTIC SHOP',
-          style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1.2),
+          style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1.2, color: Colors.white),
         ),
-        backgroundColor: Colors.white,
-        foregroundColor: ballisticBlack,
+        backgroundColor: const Color(0xFFC9A25B),
+        foregroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, size: 20),
+          icon: const Icon(Icons.arrow_back_ios_new, size: 20, color: Colors.white),
           onPressed: () {
             Navigator.pushReplacement(
                 context, MaterialPageRoute(builder: (context) => const MyHomePage()));
           },
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
+      floatingActionButton: !_isAdmin ? FloatingActionButton.extended(
         onPressed: () {
           Navigator.push(
             context,
@@ -112,7 +125,7 @@ class _ShopPageState extends State<ShopPage> {
         backgroundColor: ballisticGold,
         icon: const Icon(Icons.add, color: Colors.white),
         label: const Text("Add Product", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-      ),
+      ) : null,
       body: _isLoading
           ? Center(child: CircularProgressIndicator(color: ballisticGold))
           : Column(

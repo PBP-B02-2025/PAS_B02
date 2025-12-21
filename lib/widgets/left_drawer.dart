@@ -12,8 +12,28 @@ import 'package:ballistic/screens/menu.dart';
 class LeftDrawer extends StatelessWidget {
   const LeftDrawer({super.key});
 
+  String _getCurrentRoute(BuildContext context) {
+    final route = ModalRoute.of(context);
+    if (route != null && route.settings.name != null) {
+      return route.settings.name!;
+    }
+    // Fallback: check widget type
+    final widget = context.widget;
+    if (widget.runtimeType.toString().contains('MyHomePage')) return 'HOME';
+    if (widget.runtimeType.toString().contains('ShopPage')) return 'SHOP';
+    if (widget.runtimeType.toString().contains('UserMeasurementPage')) return 'SIZE';
+    if (widget.runtimeType.toString().contains('ForumListPage')) return 'FORUM';
+    if (widget.runtimeType.toString().contains('NewsListPage')) return 'NEWS';
+    if (widget.runtimeType.toString().contains('VoucherEntryListPage')) return 'VOUCHER';
+    if (widget.runtimeType.toString().contains('ProfilePage')) return 'PROFILE';
+    if (widget.runtimeType.toString().contains('AboutPage')) return 'ABOUT';
+    return '';
+  }
+
   @override
   Widget build(BuildContext context) {
+    final currentRoute = _getCurrentRoute(context);
+    
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
@@ -27,17 +47,33 @@ class LeftDrawer extends StatelessWidget {
               ),
             ),
           ),
-          _drawerItem(context, 'HOME'),
+          _drawerItem(context, 'HOME', currentRoute == 'HOME'),
 
           // ExpansionTile digunakan untuk membuat dropdown/sub-menu di mobile
           ExpansionTile(
             textColor: const Color(0xFFC9A25B),
             iconColor: const Color(0xFFC9A25B),
-            title: const Text('SHOP', style: TextStyle(fontWeight: FontWeight.w500)),
+            title: Text(
+              'SHOP', 
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+                color: (currentRoute == 'SHOP' || currentRoute == 'SIZE') 
+                  ? const Color(0xFFC9A25B) 
+                  : Colors.black,
+              ),
+            ),
             childrenPadding: const EdgeInsets.only(left: 20),
             children: [
               ListTile(
-                title: const Text('Standard Shop', style: TextStyle(fontSize: 14)),
+                title: Text(
+                  'Standard Shop', 
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: currentRoute == 'SHOP' ? const Color(0xFFC9A25B) : Colors.black,
+                    fontWeight: currentRoute == 'SHOP' ? FontWeight.w600 : FontWeight.normal,
+                  ),
+                ),
+                tileColor: currentRoute == 'SHOP' ? const Color(0xFFC9A25B).withOpacity(0.1) : null,
                 onTap: () {
                   Navigator.pop(context);
                   Navigator.push(
@@ -47,7 +83,15 @@ class LeftDrawer extends StatelessWidget {
                 },
               ),
               ListTile(
-                title: const Text('Size Recommendation', style: TextStyle(fontSize: 14)),
+                title: Text(
+                  'Size Recommendation', 
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: currentRoute == 'SIZE' ? const Color(0xFFC9A25B) : Colors.black,
+                    fontWeight: currentRoute == 'SIZE' ? FontWeight.w600 : FontWeight.normal,
+                  ),
+                ),
+                tileColor: currentRoute == 'SIZE' ? const Color(0xFFC9A25B).withOpacity(0.1) : null,
                 onTap: () {
                   Navigator.pop(context);
                   Navigator.push(
@@ -59,19 +103,26 @@ class LeftDrawer extends StatelessWidget {
             ],
           ),
 
-          _drawerItem(context, 'FORUM'),
-          _drawerItem(context, 'NEWS'),
-          _drawerItem(context, 'VOUCHER'),
-          _drawerItem(context, 'PROFILE'),
-          _drawerItem(context, 'ABOUT'),
+          _drawerItem(context, 'FORUM', currentRoute == 'FORUM'),
+          _drawerItem(context, 'NEWS', currentRoute == 'NEWS'),
+          _drawerItem(context, 'VOUCHER', currentRoute == 'VOUCHER'),
+          _drawerItem(context, 'PROFILE', currentRoute == 'PROFILE'),
+          _drawerItem(context, 'ABOUT', currentRoute == 'ABOUT'),
         ],
       ),
     );
   }
 
-  Widget _drawerItem(BuildContext context, String title) {
+  Widget _drawerItem(BuildContext context, String title, bool isActive) {
     return ListTile(
-      title: Text(title, style: const TextStyle(fontWeight: FontWeight.w500)),
+      title: Text(
+        title, 
+        style: TextStyle(
+          fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
+          color: isActive ? const Color(0xFFC9A25B) : Colors.black,
+        ),
+      ),
+      tileColor: isActive ? const Color(0xFFC9A25B).withOpacity(0.1) : null,
       onTap: () {
         Navigator.pop(context);
         if (title == 'HOME') {
