@@ -41,6 +41,8 @@ Documents/
 *.keystore
 *.jks
 
+
+
 # Symbolication related
 app.*.symbols
 
