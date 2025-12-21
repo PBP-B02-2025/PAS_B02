@@ -12,6 +12,8 @@ import 'package:ballistic/shop/screen/transaction_history.dart';
 import 'package:ballistic/forum/screens/forum_entry_list.dart';
 import 'package:ballistic/screens/news/news_list.dart';
 import 'package:ballistic/voucher/screens/voucher_entry_list.dart';
+import 'package:ballistic/screens/profile/profile_page.dart';
+import 'package:ballistic/screens/about_page.dart';
 
 class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key});
@@ -76,6 +78,13 @@ class MyHomePage extends StatelessWidget {
               actions: [
                 IconButton(
                   onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (c) => const ProfilePage()));
+                  },
+                  icon: const Icon(Icons.person, size: 22, color: Colors.black),
+                  tooltip: 'Profile',
+                ),
+                IconButton(
+                  onPressed: () {
                     Navigator.push(context, MaterialPageRoute(builder: (c) => const TransactionHistoryPage()));
                   },
                   icon: const Icon(Icons.receipt_long, size: 22, color: Colors.black),
@@ -99,6 +108,18 @@ class MyHomePage extends StatelessWidget {
             
             // Hero Section (Gambar Besar)
             _buildHeroSection(context, isMobile),
+            
+            // Features Section
+            _buildFeaturesSection(isMobile),
+            
+            // Why Choose Us Section
+            _buildWhyChooseUsSection(isMobile),
+            
+            // Call to Action Section
+            _buildCallToActionSection(context, isMobile),
+            
+            // Footer
+            _buildFooter(isMobile),
           ],
         ),
       ),
@@ -129,9 +150,17 @@ class MyHomePage extends StatelessWidget {
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, letterSpacing: 2),
           ),
           
-          // Tombol Kanan (History & Logout)
+          // Tombol Kanan (Profile, History & Logout)
           Row(
             children: [
+              IconButton(
+                onPressed: () {
+                   Navigator.push(context, MaterialPageRoute(builder: (c) => const ProfilePage()));
+                },
+                icon: const Icon(Icons.person, size: 24, color: Colors.black),
+                tooltip: 'Profile',
+              ),
+              const SizedBox(width: 8),
               IconButton(
                 onPressed: () {
                    Navigator.push(context, MaterialPageRoute(builder: (c) => const TransactionHistoryPage()));
@@ -243,9 +272,9 @@ class MyHomePage extends StatelessWidget {
                     MaterialPageRoute(builder: (context) => const VoucherEntryListPage())
                   );
                 } else if (title == 'ABOUT') {
-                  // Karena belum ada halaman About, kita tampilkan pesan saja
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Halaman About belum tersedia.")),
+                  Navigator.push(
+                    context, 
+                    MaterialPageRoute(builder: (context) => const AboutPage())
                   );
                 }
               },
@@ -349,8 +378,9 @@ class MyHomePage extends StatelessWidget {
         } else if (title == 'VOUCHER') {
            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const VoucherEntryListPage()));
         } else if (title == 'ABOUT') {
-           ScaffoldMessenger.of(context).showSnackBar(
-             const SnackBar(content: Text("Halaman About belum tersedia.")),
+           Navigator.push(
+             context, 
+             MaterialPageRoute(builder: (context) => const AboutPage())
            );
         }
       },
@@ -379,7 +409,7 @@ class MyHomePage extends StatelessWidget {
           crossAxisAlignment: isMobile ? CrossAxisAlignment.center : CrossAxisAlignment.start,
           children: [
             Text(
-              'Explore Curated\nFootball Collections\nWith Us',
+              'Explore Curated\nAmerican Football\nCollections With Us',
               textAlign: isMobile ? TextAlign.center : TextAlign.left,
               style: TextStyle(
                 color: Colors.white,
@@ -390,14 +420,14 @@ class MyHomePage extends StatelessWidget {
             ),
             const SizedBox(height: 15),
             Text(
-              'Ballistic offers all categories of football merchandise, from jerseys to accessories.',
+              'Ballistic offers all categories of American football equipment, from protective gear to training accessories.',
               textAlign: isMobile ? TextAlign.center : TextAlign.left,
               style: TextStyle(color: Colors.white70, fontSize: isMobile ? 13 : 16),
             ),
             const SizedBox(height: 30),
             ElevatedButton(
               onPressed: () {
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const ShopPage()));
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const ShopPage()));
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFC9A25B),
@@ -409,6 +439,408 @@ class MyHomePage extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  // --- FEATURES SECTION ---
+  Widget _buildFeaturesSection(bool isMobile) {
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: isMobile ? 20 : 80,
+        vertical: isMobile ? 40 : 60,
+      ),
+      color: Colors.white,
+      child: Column(
+        children: [
+          Text(
+            'Why Choose Ballistic',
+            style: TextStyle(
+              fontSize: isMobile ? 24 : 32,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            'Premium American football equipment for serious athletes',
+            style: TextStyle(
+              fontSize: isMobile ? 14 : 16,
+              color: Colors.grey[600],
+            ),
+          ),
+          SizedBox(height: isMobile ? 30 : 50),
+          Wrap(
+            spacing: 20,
+            runSpacing: 20,
+            alignment: WrapAlignment.center,
+            children: [
+              _buildFeatureCard(
+                Icons.verified,
+                'Quality Guaranteed',
+                'All products are thoroughly tested and certified',
+                isMobile,
+              ),
+              _buildFeatureCard(
+                Icons.local_shipping,
+                'Fast Delivery',
+                'Quick and secure shipping to your doorstep',
+                isMobile,
+              ),
+              _buildFeatureCard(
+                Icons.support_agent,
+                '24/7 Support',
+                'Our team is always ready to help you',
+                isMobile,
+              ),
+              _buildFeatureCard(
+                Icons.price_check,
+                'Best Prices',
+                'Competitive pricing with regular discounts',
+                isMobile,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFeatureCard(IconData icon, String title, String description, bool isMobile) {
+    return Container(
+      width: isMobile ? MediaQueryData.fromView(WidgetsBinding.instance.platformDispatcher.views.first).size.width - 40 : 250,
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 2,
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: const Color(0xFFC9A25B).withOpacity(0.1),
+              borderRadius: BorderRadius.circular(50),
+            ),
+            child: Icon(icon, size: 40, color: const Color(0xFFC9A25B)),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            description,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.grey[600],
+              height: 1.5,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+
+
+  // --- WHY CHOOSE US SECTION ---
+  Widget _buildWhyChooseUsSection(bool isMobile) {
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: isMobile ? 20 : 80,
+        vertical: isMobile ? 40 : 60,
+      ),
+      color: Colors.white,
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Flexible(
+                child: Column(
+                  crossAxisAlignment: isMobile ? CrossAxisAlignment.center : CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Join Our Community',
+                      textAlign: isMobile ? TextAlign.center : TextAlign.left,
+                      style: TextStyle(
+                        fontSize: isMobile ? 24 : 32,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Connect with fellow American football athletes, share experiences, and get expert advice from our community forum.',
+                      textAlign: isMobile ? TextAlign.center : TextAlign.left,
+                      style: TextStyle(
+                        fontSize: isMobile ? 14 : 16,
+                        color: Colors.grey[600],
+                        height: 1.6,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Row(
+                      mainAxisAlignment: isMobile ? MainAxisAlignment.center : MainAxisAlignment.start,
+                      children: [
+                        _buildStatCard('10K+', 'Members', isMobile),
+                        const SizedBox(width: 20),
+                        _buildStatCard('500+', 'Products', isMobile),
+                        const SizedBox(width: 20),
+                        _buildStatCard('5K+', 'Reviews', isMobile),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatCard(String number, String label, bool isMobile) {
+    return Column(
+      children: [
+        Text(
+          number,
+          style: TextStyle(
+            fontSize: isMobile ? 24 : 32,
+            fontWeight: FontWeight.bold,
+            color: const Color(0xFFC9A25B),
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: isMobile ? 12 : 14,
+            color: Colors.grey[600],
+          ),
+        ),
+      ],
+    );
+  }
+
+  // --- CALL TO ACTION SECTION ---
+  Widget _buildCallToActionSection(BuildContext context, bool isMobile) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(
+        horizontal: isMobile ? 20 : 80,
+        vertical: isMobile ? 50 : 80,
+      ),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            const Color(0xFFC9A25B),
+            const Color(0xFFE8D4A0),
+          ],
+        ),
+      ),
+      child: Column(
+        children: [
+          Text(
+            'Ready to Start Your Journey?',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: isMobile ? 24 : 36,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Explore our collection and find the perfect gear for your next game',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: isMobile ? 14 : 16,
+              color: Colors.white.withOpacity(0.9),
+            ),
+          ),
+          const SizedBox(height: 32),
+          Wrap(
+            spacing: 16,
+            runSpacing: 16,
+            alignment: WrapAlignment.center,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const ShopPage()));
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  foregroundColor: const Color(0xFFC9A25B),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: isMobile ? 30 : 40,
+                    vertical: isMobile ? 16 : 20,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: const Text(
+                  'Shop Now',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+              OutlinedButton(
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const ForumListPage()));
+                },
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  side: const BorderSide(color: Colors.white, width: 2),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: isMobile ? 30 : 40,
+                    vertical: isMobile ? 16 : 20,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: const Text(
+                  'Join Forum',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  // --- FOOTER ---
+  Widget _buildFooter(bool isMobile) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(
+        horizontal: isMobile ? 20 : 80,
+        vertical: 40,
+      ),
+      color: Colors.grey[900],
+      child: Column(
+        children: [
+          if (!isMobile)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'BALLISTIC',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFFC9A25B),
+                          letterSpacing: 2,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        'Your trusted American football equipment store',
+                        style: TextStyle(color: Colors.grey[400], fontSize: 14),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Quick Links',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Text('About Us', style: TextStyle(color: Colors.grey[400], fontSize: 14)),
+                      const SizedBox(height: 8),
+                      Text('Shop', style: TextStyle(color: Colors.grey[400], fontSize: 14)),
+                      const SizedBox(height: 8),
+                      Text('Forum', style: TextStyle(color: Colors.grey[400], fontSize: 14)),
+                      const SizedBox(height: 8),
+                      Text('News', style: TextStyle(color: Colors.grey[400], fontSize: 14)),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Contact',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Text('support@ballistic.com', style: TextStyle(color: Colors.grey[400], fontSize: 14)),
+                      const SizedBox(height: 8),
+                      Text('+62 123 4567 8900', style: TextStyle(color: Colors.grey[400], fontSize: 14)),
+                      const SizedBox(height: 8),
+                      Text('Jakarta, Indonesia', style: TextStyle(color: Colors.grey[400], fontSize: 14)),
+                    ],
+                  ),
+                ),
+              ],
+            )
+          else
+            Column(
+              children: [
+                const Text(
+                  'BALLISTIC',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFFC9A25B),
+                    letterSpacing: 2,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'Your trusted American football equipment store',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.grey[400], fontSize: 14),
+                ),
+              ],
+            ),
+          const SizedBox(height: 30),
+          Divider(color: Colors.grey[700]),
+          const SizedBox(height: 20),
+          Text(
+            '© 2025 BALLISTIC - Team B02. All rights reserved.',
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.grey[500], fontSize: 12),
+          ),
+        ],
       ),
     );
   }

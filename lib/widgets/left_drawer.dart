@@ -3,6 +3,9 @@ import 'package:ballistic/forum/screens/forum_entry_list.dart';
 import 'package:ballistic/voucher/screens/voucher_entry_list.dart';
 import 'package:flutter/material.dart';
 import 'package:ballistic/screens/news/news_list.dart';
+import 'package:ballistic/screens/profile/profile_page.dart';
+import 'package:ballistic/screens/about_page.dart';
+import 'package:ballistic/shop/screen/shop.dart';
 
 import 'package:ballistic/screens/menu.dart';
 
@@ -37,7 +40,10 @@ class LeftDrawer extends StatelessWidget {
                 title: const Text('Standard Shop', style: TextStyle(fontSize: 14)),
                 onTap: () {
                   Navigator.pop(context);
-                  // Tambahkan navigasi ke shop standard jika sudah ada
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const ShopPage()),
+                  );
                 },
               ),
               ListTile(
@@ -56,6 +62,7 @@ class LeftDrawer extends StatelessWidget {
           _drawerItem(context, 'FORUM'),
           _drawerItem(context, 'NEWS'),
           _drawerItem(context, 'VOUCHER'),
+          _drawerItem(context, 'PROFILE'),
           _drawerItem(context, 'ABOUT'),
         ],
       ),
@@ -86,6 +93,16 @@ class LeftDrawer extends StatelessWidget {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => const VoucherEntryListPage())
+          );
+        } else if (title == 'PROFILE') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const ProfilePage()),
+          );
+        } else if (title == 'ABOUT') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const AboutPage()),
           );
         }
       },
