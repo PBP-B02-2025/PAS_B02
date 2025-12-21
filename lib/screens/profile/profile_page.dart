@@ -31,7 +31,7 @@ class _ProfilePageState extends State<ProfilePage> {
       final userInfo = await UserInfo.getUserInfo();
       
       // Fetch measurement data
-      final measurementResponse = await request.get('http://localhost:8000/measurement/measurementdata/');
+      final measurementResponse = await request.get('https://jovian-felix-ballistic.pbp.cs.ui.ac.id/measurement/measurementdata/');
       
       setState(() {
         userData = userInfo;
@@ -51,7 +51,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _handleLogout(BuildContext context, CookieRequest request) async {
-    const String logoutUrl = "http://localhost:8000/auth/logout/";
+    const String logoutUrl = "https://jovian-felix-ballistic.pbp.cs.ui.ac.id/auth/logout/";
     
     final response = await request.logout(logoutUrl);
     String message = response["message"];
