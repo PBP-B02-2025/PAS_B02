@@ -61,12 +61,36 @@ class _LoginPageState extends State<LoginPage> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  // Logo/Icon
+                  Container(
+                    width: 80,
+                    height: 80,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFC9A25B),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: const Icon(
+                      Icons.sports_football,
+                      size: 50,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 24.0),
                   const Text(
-                    'Login',
+                    'Sign In to BALLISTIC',
                     style: TextStyle(
                       fontSize: 24.0,
                       fontWeight: FontWeight.bold,
                     ),
+                  ),
+                  const SizedBox(height: 8.0),
+                  Text(
+                    'Enter your credentials to access your account',
+                    style: TextStyle(
+                      fontSize: 14.0,
+                      color: Colors.grey[600],
+                    ),
+                    textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 30.0),
                   TextField(
@@ -74,6 +98,7 @@ class _LoginPageState extends State<LoginPage> {
                     decoration: const InputDecoration(
                       labelText: 'Username',
                       hintText: 'Enter your username',
+                      prefixIcon: Icon(Icons.person_outline),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(12.0)),
                       ),
@@ -87,6 +112,7 @@ class _LoginPageState extends State<LoginPage> {
                     decoration: const InputDecoration(
                       labelText: 'Password',
                       hintText: 'Enter your password',
+                      prefixIcon: Icon(Icons.lock_outline),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(12.0)),
                       ),
@@ -162,10 +188,13 @@ class _LoginPageState extends State<LoginPage> {
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
                       minimumSize: Size(double.infinity, 50),
-                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      backgroundColor: const Color(0xFFC9A25B),
                       padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12.0),
+                      ),
                     ),
-                    child: const Text('Login'),
+                    child: const Text('Sign In', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                   ),
                   const SizedBox(height: 36.0),
                   GestureDetector(
