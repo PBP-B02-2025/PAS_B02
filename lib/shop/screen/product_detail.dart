@@ -1,3 +1,4 @@
+// (Imports sama seperti sebelumnya)
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:ballistic/shop/models/product.dart';
@@ -8,6 +9,7 @@ import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
+// ... (Class ProductDetailPage definition & initState sama) ...
 class ProductDetailPage extends StatefulWidget {
   final Product product;
   const ProductDetailPage({super.key, required this.product});
@@ -35,7 +37,6 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     if (mounted) {
       setState(() {
         currentUsername = username;
-        // Cek apakah user yang login adalah pemilik produk
         isOwner = widget.product.owner == username;
       });
     }
@@ -45,40 +46,67 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     return kIsWeb ? "http://localhost:8000" : "http://10.0.2.2:8000";
   }
 
-  // --- FUNGSI DELETE ---
+  // ... (Fungsi _deleteProduct & _showOwnerMenu TETAP SAMA, tidak perlu diubah) ...
   Future<void> _deleteProduct(CookieRequest request) async {
-    final url = "${getBaseUrl()}/shop/api/delete/${widget.product.id}/";
-    
-    try {
-      final response = await request.post(url, {});
-      if (response['status'] == 'success') {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Produk berhasil dihapus"), backgroundColor: Colors.green)
-          );
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(builder: (context) => const ShopPage()),
-            (route) => false,
-          );
+      // (Kode delete sama seperti sebelumnya)
+      final url = "${getBaseUrl()}/shop/api/delete/${widget.product.id}/";
+      try {
+        final response = await request.post(url, {});
+        if (response['status'] == 'success') {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Produk berhasil dihapus"), backgroundColor: Colors.green));
+            Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const ShopPage()), (route) => false);
+          }
+        } else {
+           if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(response['message'] ?? "Gagal menghapus"), backgroundColor: Colors.red));
         }
-      } else {
-         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(response['message'] ?? "Gagal menghapus"), backgroundColor: Colors.red)
-          );
-        }
+      } catch (e) {
+        if(mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e"), backgroundColor: Colors.red));
       }
-    } catch (e) {
-      if(mounted) {
-         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Error: $e"), backgroundColor: Colors.red)
-          );
-      }
-    }
   }
 
-  // --- MODAL TRANSAKSI ---
+  void _showOwnerMenu(BuildContext context, CookieRequest request) {
+    // (Kode menu owner sama seperti sebelumnya)
+     showModalBottomSheet(
+      context: context,
+      builder: (context) => Container(
+        padding: const EdgeInsets.symmetric(vertical: 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.edit, color: Colors.blue),
+              title: const Text('Edit Produk'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(context, MaterialPageRoute(builder: (c) => ProductFormPage(product: widget.product)));
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.delete, color: Colors.red),
+              title: const Text('Hapus Produk', style: TextStyle(color: Colors.red)),
+              onTap: () {
+                Navigator.pop(context);
+                showDialog(
+                  context: context,
+                  builder: (ctx) => AlertDialog(
+                    title: const Text("Konfirmasi Hapus"),
+                    content: const Text("Yakin ingin menghapus produk ini?"),
+                    actions: [
+                      TextButton(onPressed: ()=>Navigator.pop(ctx), child: const Text("Batal")),
+                      TextButton(onPressed: () { Navigator.pop(ctx); _deleteProduct(request); }, child: const Text("Hapus", style: TextStyle(color: Colors.red))),
+                    ],
+                  )
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // --- MODAL TRANSAKSI (UPDATED) ---
   void _showPurchaseModal(BuildContext context, CookieRequest request) {
     int quantity = 1;
     final TextEditingController voucherController = TextEditingController();
@@ -114,12 +142,10 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 ),
                 const SizedBox(height: 20),
                 
-                const Text("Konfirmasi Pesanan", 
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)
-                ),
+                const Text("Konfirmasi Pesanan", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 24),
                 
-                // Info Produk Singkat
+                // Info Produk
                 Row(
                   children: [
                     ClipRRect(
@@ -135,13 +161,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(widget.product.name, 
-                            maxLines: 1, overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(fontWeight: FontWeight.bold)
-                          ),
-                          Text(formatter.format(widget.product.price), 
-                            style: TextStyle(color: ballisticGold, fontWeight: FontWeight.bold)
-                          ),
+                          Text(widget.product.name, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.bold)),
+                          Text(formatter.format(widget.product.price), style: TextStyle(color: ballisticGold, fontWeight: FontWeight.bold)),
                         ],
                       ),
                     )
@@ -150,16 +171,13 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 
                 const Divider(height: 30),
 
-                // Quantity Selector
+                // Quantity
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text("Jumlah", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
                     Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey.shade300),
-                        borderRadius: BorderRadius.circular(8)
-                      ),
+                      decoration: BoxDecoration(border: Border.all(color: Colors.grey.shade300), borderRadius: BorderRadius.circular(8)),
                       child: Row(
                         children: [
                           IconButton(
@@ -183,20 +201,21 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 
                 const SizedBox(height: 20),
 
-                // Voucher Input
+                // Voucher Input (LEBIH RAPI)
                 TextField(
                   controller: voucherController,
                   decoration: InputDecoration(
                     labelText: "Kode Voucher (Opsional)",
-                    prefixIcon: const Icon(Icons.discount_outlined),
+                    prefixIcon: const Icon(Icons.confirmation_number_outlined),
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    helperText: "Masukkan kode voucher aktif untuk dapat diskon",
                   ),
                 ),
 
                 const SizedBox(height: 24),
 
-                // Total Price Row
+                // Total Price
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
@@ -207,17 +226,15 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text("Total Pembayaran", style: TextStyle(fontWeight: FontWeight.bold)),
-                      Text(formatter.format(total), 
-                        style: TextStyle(color: ballisticBlack, fontWeight: FontWeight.w900, fontSize: 18)
-                      ),
+                      const Text("Estimasi Total", style: TextStyle(fontWeight: FontWeight.bold)),
+                      Text(formatter.format(total), style: TextStyle(color: ballisticBlack, fontWeight: FontWeight.w900, fontSize: 18)),
                     ],
                   ),
                 ),
 
                 const SizedBox(height: 24),
 
-                // Action Button
+                // Button
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -229,15 +246,9 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       elevation: 0,
                     ),
                     onPressed: () async {
-                      // Tutup modal dulu biar UX smooth
                       Navigator.pop(ctx);
                       
-                      // Tampilkan loading
-                      showDialog(
-                        context: context, 
-                        barrierDismissible: false,
-                        builder: (c) => const Center(child: CircularProgressIndicator())
-                      );
+                      showDialog(context: context, barrierDismissible: false, builder: (c) => const Center(child: CircularProgressIndicator()));
 
                       final res = await request.post("${getBaseUrl()}/shop/create-transaction/", {
                         'product_id': widget.product.id,
@@ -245,21 +256,29 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                         'voucher_code': voucherController.text,
                       });
 
-                      // Tutup loading
                       if (context.mounted) Navigator.pop(context);
 
                       if (res['status'] == 'success') {
                         if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text("Transaksi Berhasil!"), backgroundColor: Colors.green)
-                          );
-                          // Redirect ke Shop Utama (atau bisa ke Riwayat Transaksi)
+                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Transaksi Berhasil!"), backgroundColor: Colors.green));
                           Navigator.pushReplacement(context, MaterialPageRoute(builder: (c) => const ShopPage()));
                         }
                       } else {
+                        // DISINI ERROR DARI BACKEND DITAMPILKAN
+                        // Contoh: "Voucher tidak aktif" atau "Kode voucher salah"
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(res['message'] ?? "Gagal"), backgroundColor: Colors.red)
+                            SnackBar(
+                              content: Row(
+                                children: [
+                                  const Icon(Icons.error_outline, color: Colors.white),
+                                  const SizedBox(width: 8),
+                                  Expanded(child: Text(res['message'] ?? "Gagal")),
+                                ],
+                              ),
+                              backgroundColor: Colors.red,
+                              behavior: SnackBarBehavior.floating,
+                            )
                           );
                         }
                       }
@@ -275,6 +294,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     );
   }
 
+  // ... (Widget Build & Helper tetap sama seperti kode sebelumnya) ...
   @override
   Widget build(BuildContext context) {
     final request = context.watch<CookieRequest>();
@@ -284,7 +304,6 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       backgroundColor: Colors.white,
       body: CustomScrollView(
         slivers: [
-          // --- 1. HERO IMAGE HEADER (SLIVER) ---
           SliverAppBar(
             expandedHeight: 400.0,
             floating: false,
@@ -293,19 +312,13 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             elevation: 0,
             leading: CircleAvatar(
               backgroundColor: Colors.white.withOpacity(0.8),
-              child: IconButton(
-                icon: const Icon(Icons.arrow_back, color: Colors.black),
-                onPressed: () => Navigator.pop(context),
-              ),
+              child: IconButton(icon: const Icon(Icons.arrow_back, color: Colors.black), onPressed: () => Navigator.pop(context)),
             ),
             actions: [
                if (isOwner) 
                 CircleAvatar(
                   backgroundColor: Colors.white.withOpacity(0.8),
-                  child: IconButton(
-                    icon: const Icon(Icons.more_horiz, color: Colors.black),
-                    onPressed: () => _showOwnerMenu(context, request),
-                  ),
+                  child: IconButton(icon: const Icon(Icons.more_horiz, color: Colors.black), onPressed: () => _showOwnerMenu(context, request)),
                 ),
               const SizedBox(width: 16),
             ],
@@ -316,118 +329,57 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   Image.network(
                     widget.product.thumbnail,
                     fit: BoxFit.cover,
-                    errorBuilder: (ctx, error, stackTrace) => Container(
-                      color: Colors.grey[200],
-                      child: const Icon(Icons.image_not_supported, size: 50, color: Colors.grey),
-                    ),
+                    errorBuilder: (ctx, error, stackTrace) => Container(color: Colors.grey[200], child: const Icon(Icons.image_not_supported, size: 50, color: Colors.grey)),
                   ),
-                  // Gradient overlay supaya tulisan di atasnya (kalau ada) terbaca
                   const DecoratedBox(
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Colors.black26,
-                          Colors.transparent,
-                        ],
-                        stops: [0.0, 0.3],
-                      ),
+                      gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.black26, Colors.transparent], stops: [0.0, 0.3]),
                     ),
                   ),
                 ],
               ),
             ),
           ),
-
-          // --- 2. PRODUCT DETAILS BODY ---
           SliverToBoxAdapter(
             child: Container(
               padding: const EdgeInsets.all(24),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
-              ),
+              decoration: const BoxDecoration(color: Colors.white, borderRadius: BorderRadius.vertical(top: Radius.circular(32))),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Kategori & Brand Chip
                   Row(
                     children: [
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: ballisticGold.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          widget.product.category.toUpperCase(),
-                          style: TextStyle(color: ballisticGold, fontWeight: FontWeight.bold, fontSize: 12),
-                        ),
+                        decoration: BoxDecoration(color: ballisticGold.withOpacity(0.1), borderRadius: BorderRadius.circular(20)),
+                        child: Text(widget.product.category.toUpperCase(), style: TextStyle(color: ballisticGold, fontWeight: FontWeight.bold, fontSize: 12)),
                       ),
                       if (widget.product.brand != null && widget.product.brand!.isNotEmpty) ...[
                         const SizedBox(width: 8),
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey.shade300),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Text(
-                            widget.product.brand!,
-                            style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.w500, fontSize: 12),
-                          ),
+                          decoration: BoxDecoration(border: Border.all(color: Colors.grey.shade300), borderRadius: BorderRadius.circular(20)),
+                          child: Text(widget.product.brand!, style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.w500, fontSize: 12)),
                         ),
                       ]
                     ],
                   ),
                   const SizedBox(height: 16),
-
-                  // Nama Produk & Harga
-                  Text(
-                    widget.product.name,
-                    style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold, height: 1.2),
-                  ),
+                  Text(widget.product.name, style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold, height: 1.2)),
                   const SizedBox(height: 8),
-                  Text(
-                    formatter.format(widget.product.price),
-                    style: TextStyle(fontSize: 22, color: ballisticBlack, fontWeight: FontWeight.w900),
-                  ),
-
+                  Text(formatter.format(widget.product.price), style: TextStyle(fontSize: 22, color: ballisticBlack, fontWeight: FontWeight.w900)),
                   const SizedBox(height: 24),
-
-                  // Seller & Size Info Row
                   Row(
                     children: [
-                      Expanded(
-                        child: _buildInfoItem(
-                          Icons.storefront_outlined, 
-                          "Seller", 
-                          widget.product.owner
-                        ),
-                      ),
+                      Expanded(child: _buildInfoItem(Icons.storefront_outlined, "Seller", widget.product.owner)),
                       Container(width: 1, height: 40, color: Colors.grey[300]),
-                      Expanded(
-                        child: _buildInfoItem(
-                          Icons.straighten_outlined, 
-                          "Size", 
-                          widget.product.size
-                        ),
-                      ),
+                      Expanded(child: _buildInfoItem(Icons.straighten_outlined, "Size", widget.product.size)),
                     ],
                   ),
-
                   const SizedBox(height: 32),
-                  
-                  // Deskripsi Section
                   const Text("Description", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 12),
-                  Text(
-                    widget.product.description,
-                    style: TextStyle(fontSize: 15, color: Colors.grey[700], height: 1.6),
-                  ),
-                  
-                  // Jarak extra di bawah supaya tidak tertutup tombol fixed
+                  Text(widget.product.description, style: TextStyle(fontSize: 15, color: Colors.grey[700], height: 1.6)),
                   const SizedBox(height: 100), 
                 ],
               ),
@@ -435,21 +387,10 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           ),
         ],
       ),
-      
-      // --- 3. BOTTOM FLOATING BAR (BUTTON BUY) ---
       bottomNavigationBar: !isOwner 
         ? Container(
             padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, -5),
-                ),
-              ],
-            ),
+            decoration: BoxDecoration(color: Colors.white, boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -5))]),
             child: SafeArea(
               child: ElevatedButton(
                 onPressed: () => _showPurchaseModal(context, request),
@@ -471,69 +412,17 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               ),
             ),
           )
-        : null, // Jika owner, tombol beli hilang
+        : null,
     );
   }
 
-  // Widget Helper untuk Info (Seller/Size)
   Widget _buildInfoItem(IconData icon, String label, String value) {
-    return Column(
-      children: [
+    return Column(children: [
         Icon(icon, color: Colors.grey, size: 24),
         const SizedBox(height: 4),
         Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
         const SizedBox(height: 2),
         Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-      ],
-    );
-  }
-
-  // Menu opsi untuk Owner (Edit/Delete)
-  void _showOwnerMenu(BuildContext context, CookieRequest request) {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) => Container(
-        padding: const EdgeInsets.symmetric(vertical: 20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.edit, color: Colors.blue),
-              title: const Text('Edit Produk'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(context, MaterialPageRoute(
-                  builder: (c) => ProductFormPage(product: widget.product)
-                ));
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.delete, color: Colors.red),
-              title: const Text('Hapus Produk', style: TextStyle(color: Colors.red)),
-              onTap: () {
-                Navigator.pop(context);
-                showDialog(
-                  context: context,
-                  builder: (ctx) => AlertDialog(
-                    title: const Text("Konfirmasi Hapus"),
-                    content: const Text("Yakin ingin menghapus produk ini?"),
-                    actions: [
-                      TextButton(onPressed: ()=>Navigator.pop(ctx), child: const Text("Batal")),
-                      TextButton(
-                        onPressed: () { 
-                          Navigator.pop(ctx); 
-                          _deleteProduct(request); 
-                        }, 
-                        child: const Text("Hapus", style: TextStyle(color: Colors.red))
-                      ),
-                    ],
-                  )
-                );
-              },
-            ),
-          ],
-        ),
-      ),
-    );
+      ]);
   }
 }

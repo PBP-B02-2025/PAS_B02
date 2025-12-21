@@ -1,3 +1,5 @@
+// lib/shop/models/transaction.dart
+
 class Transaction {
   final String id;
   final String productId;
@@ -27,13 +29,20 @@ class Transaction {
     return Transaction(
       id: json['id'].toString(),
       productId: json['product_id'].toString(),
-      productName: json['product_name'] ?? "",
+      productName: json['product_name'] ?? "Unknown Product",
       productThumbnail: json['product_thumbnail'] ?? "",
-      quantity: json['quantity'] ?? 1,
-      originalProductPrice: json['original_product_price'] ?? 0,
-      appliedDiscountPercentage: json['applied_discount_percentage'] ?? 0,
-      finalPrice: json['final_price'] ?? 0,
+      
+      // Menggunakan parsing yang lebih aman (cegah error String vs Int)
+      quantity: int.tryParse(json['quantity'].toString()) ?? 1,
+      
+      originalProductPrice: (json['original_product_price'] as num?)?.toInt() ?? 0,
+      
+      appliedDiscountPercentage: (json['applied_discount_percentage'] as num?)?.toInt() ?? 0,
+      
+      finalPrice: (json['final_price'] as num?)?.toInt() ?? 0,
+      
       purchaseTimestamp: DateTime.parse(json['purchase_timestamp']),
+      
       usedVoucherCode: json['used_voucher_code'],
     );
   }

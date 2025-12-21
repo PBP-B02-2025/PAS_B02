@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-// IMPORT PENTING INI DITAMBAHKAN UNTUK MEMPERBAIKI ERROR LOCALE
 import 'package:intl/date_symbol_data_local.dart'; 
 import 'package:ballistic/shop/models/transaction.dart';
 
@@ -15,13 +14,10 @@ class TransactionHistoryPage extends StatefulWidget {
 }
 
 class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
-  // Palet Warna Ballistic
   final Color ballisticGold = const Color(0xFFC9A25B);
   final Color ballisticBlack = const Color(0xFF1A1A1A);
 
   Future<List<Transaction>> fetchHistory(CookieRequest request) async {
-    // --- PERBAIKAN UTAMA ADA DI SINI ---
-    // Kita inisialisasi format tanggal Indonesia sebelum mengambil data
     await initializeDateFormatting('id_ID', null);
 
     final String baseUrl = kIsWeb ? "http://localhost:8000" : "http://10.0.2.2:8000";
@@ -68,7 +64,7 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
             return ListView.separated(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
               itemCount: snapshot.data!.length,
-              separatorBuilder: (ctx, index) => const SizedBox(height: 20),
+              separatorBuilder: (ctx, index) => const SizedBox(height: 24),
               itemBuilder: (_, index) => _buildCreativeCard(snapshot.data![index]),
             );
           }
@@ -77,149 +73,193 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
     );
   }
 
-  // --- KARTU TRANSAKSI KREATIF (DESAIN BARU) ---
   Widget _buildCreativeCard(Transaction transaction) {
-    // Pastikan Locale 'id_ID' digunakan di sini
     final formatter = NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);
     
-    // Konversi ke Waktu Lokal
     final localDate = transaction.purchaseTimestamp.toLocal();
-    // Karena initializeDateFormatting sudah dipanggil di fetchHistory, baris ini aman sekarang
     final dateString = DateFormat('EEEE, d MMM yyyy', 'id_ID').format(localDate);
     final timeString = DateFormat('HH:mm').format(localDate);
 
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
+    // Cek apakah ada voucher yang dipakai
+    bool hasVoucher = transaction.appliedDiscountPercentage > 0;
+
+    return Column(
+      children: [
+        // --- MAIN CARD ---
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(
+              top: const Radius.circular(20),
+              bottom: hasVoucher ? Radius.zero : const Radius.circular(20) // Jika ada voucher, bawahnya rata
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 15,
+                offset: const Offset(0, 5),
+              ),
+            ],
           ),
-        ],
-      ),
-      child: Column(
-        children: [
-          // 1. Header: Waktu & Status
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+          child: Column(
+            children: [
+              // Header: Waktu & Status
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      dateString,
-                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black54),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          dateString,
+                          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black54),
+                        ),
+                        Text(
+                          "$timeString WIB",
+                          style: TextStyle(fontSize: 11, color: Colors.grey[400], fontWeight: FontWeight.w500),
+                        ),
+                      ],
                     ),
-                    Text(
-                      "$timeString WIB",
-                      style: TextStyle(fontSize: 11, color: Colors.grey[400], fontWeight: FontWeight.w500),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: Colors.green.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.check_circle, size: 14, color: Colors.green),
+                          const SizedBox(width: 4),
+                          Text(
+                            "BERHASIL",
+                            style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.green[700]),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: Colors.green.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.check_circle, size: 14, color: Colors.green),
-                      const SizedBox(width: 4),
-                      Text(
-                        "BERHASIL",
-                        style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.green[700]),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          
-          const Divider(height: 1, thickness: 0.5),
+              ),
+              
+              const Divider(height: 1, thickness: 0.5),
 
-          // 2. Body: Gambar, Info, dan QUANTITY HIGHLIGHT
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Gambar Produk
-                Container(
-                  decoration: BoxDecoration(
-                    boxShadow: [
-                      BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4))
-                    ],
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
-                    child: Container(
-                      width: 80, height: 80,
-                      color: Colors.grey[100],
-                      child: Image.network(
-                        transaction.productThumbnail,
-                        fit: BoxFit.cover,
-                        errorBuilder: (ctx, err, stack) => Icon(Icons.shopping_bag_outlined, color: Colors.grey[300], size: 30),
+              // Body: Produk
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        boxShadow: [
+                          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4))
+                        ],
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(16),
+                        child: Container(
+                          width: 80, height: 80,
+                          color: Colors.grey[100],
+                          child: Image.network(
+                            transaction.productThumbnail,
+                            fit: BoxFit.cover,
+                            errorBuilder: (ctx, err, stack) => Icon(Icons.shopping_bag_outlined, color: Colors.grey[300], size: 30),
+                          ),
+                        ),
                       ),
                     ),
-                  ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            transaction.productName,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, height: 1.2),
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                // Harga asli sebelum diskon
+                                formatter.format(transaction.originalProductPrice),
+                                style: TextStyle(
+                                  color: hasVoucher ? Colors.red[300] : Colors.grey[600], 
+                                  fontSize: 13, 
+                                  decoration: hasVoucher ? TextDecoration.lineThrough : TextDecoration.none
+                                ),
+                              ),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: ballisticBlack,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Text(
+                                  "x${transaction.quantity}",
+                                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 16),
-                
-                // Detail Info
+              ),
+            ],
+          ),
+        ),
+
+        // --- VOUCHER SECTION (The "Ticket Stub") ---
+        if (hasVoucher)
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFFF9E6), // Kuning sangat muda (Voucher feel)
+              borderRadius: const BorderRadius.vertical(bottom: Radius.circular(20)),
+              border: Border.all(color: ballisticGold.withOpacity(0.3)),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.discount, size: 20, color: ballisticGold),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        transaction.productName,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, height: 1.2),
+                        "VOUCHER APPLIED",
+                        style: TextStyle(fontSize: 10, color: ballisticGold, fontWeight: FontWeight.bold, letterSpacing: 1),
                       ),
-                      const SizedBox(height: 8),
-                      
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          // Harga Satuan
-                          Text(
-                            formatter.format(transaction.originalProductPrice),
-                            style: TextStyle(color: Colors.grey[600], fontSize: 13, decoration: TextDecoration.lineThrough),
-                          ),
-                          
-                          // BADGE QUANTITY
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: ballisticBlack,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              "x${transaction.quantity}",
-                              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
-                            ),
-                          ),
-                        ],
+                      Text(
+                        "${transaction.usedVoucherCode} (-${transaction.appliedDiscountPercentage}%)",
+                        style: TextStyle(fontWeight: FontWeight.bold, color: Colors.brown[700], fontSize: 13),
                       ),
                     ],
                   ),
                 ),
+                Text(
+                  formatter.format(transaction.finalPrice),
+                  style: TextStyle(color: ballisticBlack, fontWeight: FontWeight.w900, fontSize: 18),
+                ),
               ],
             ),
-          ),
-
-          // 3. Footer: Total Harga
+          )
+        else 
+        // Kalau tidak ada voucher, tutup card dengan total harga biasa
           Container(
-            decoration: BoxDecoration(
-              color: ballisticGold.withOpacity(0.08),
+             decoration: BoxDecoration(
+              color: Colors.white,
               borderRadius: const BorderRadius.vertical(bottom: Radius.circular(20)),
+              boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 5, offset: const Offset(0, 5))],
             ),
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
             child: Row(
@@ -228,13 +268,12 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                 const Text("Total Belanja", style: TextStyle(fontWeight: FontWeight.w500, color: Colors.black87)),
                 Text(
                   formatter.format(transaction.finalPrice),
-                  style: TextStyle(color: ballisticGold, fontWeight: FontWeight.w900, fontSize: 18),
+                  style: TextStyle(color: ballisticBlack, fontWeight: FontWeight.w900, fontSize: 18),
                 ),
               ],
             ),
           ),
-        ],
-      ),
+      ],
     );
   }
 
