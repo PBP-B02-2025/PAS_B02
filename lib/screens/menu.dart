@@ -3,6 +3,7 @@ import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart'; 
 import 'package:ballistic/screens/login.dart'; 
 import 'package:ballistic/utils/user_info.dart'; 
+import 'package:url_launcher/url_launcher.dart'; 
 
 // --- IMPORT HALAMAN FITUR ---
 import 'package:ballistic/shop/screen/shop.dart'; 
@@ -119,7 +120,7 @@ class MyHomePage extends StatelessWidget {
             _buildCallToActionSection(context, isMobile),
             
             // Footer
-            _buildFooter(isMobile),
+            _buildFooter(context, isMobile),
           ],
         ),
       ),
@@ -135,12 +136,37 @@ class MyHomePage extends StatelessWidget {
         children: [
           // Icon Kiri
           Row(
-            children: const [
-              Icon(Icons.camera_alt_outlined, size: 20),
-              SizedBox(width: 15),
-              Icon(Icons.discord, size: 20),
-              SizedBox(width: 15),
-              Icon(Icons.business, size: 20),
+            children: [
+              IconButton(
+                icon: const Icon(Icons.camera_alt_outlined, size: 20),
+                tooltip: 'Instagram',
+                onPressed: () async {
+                  final Uri url = Uri.parse('https://www.instagram.com/fasilkomuiofficial/');
+                  if (await canLaunchUrl(url)) {
+                    await launchUrl(url, mode: LaunchMode.externalApplication);
+                  }
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.discord, size: 20),
+                tooltip: 'Discord',
+                onPressed: () async {
+                  final Uri url = Uri.parse('https://discord.gg/6VZfhBg2');
+                  if (await canLaunchUrl(url)) {
+                    await launchUrl(url, mode: LaunchMode.externalApplication);
+                  }
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.business, size: 20),
+                tooltip: 'LinkedIn',
+                onPressed: () async {
+                  final Uri url = Uri.parse('https://id.linkedin.com/in/fiona-ratu-maheswari-52399a245');
+                  if (await canLaunchUrl(url)) {
+                    await launchUrl(url, mode: LaunchMode.externalApplication);
+                  }
+                },
+              ),
             ],
           ),
           
@@ -730,7 +756,7 @@ class MyHomePage extends StatelessWidget {
   }
 
   // --- FOOTER ---
-  Widget _buildFooter(bool isMobile) {
+  Widget _buildFooter(BuildContext context, bool isMobile) {
     return Container(
       width: double.infinity,
       padding: EdgeInsets.symmetric(
@@ -779,13 +805,33 @@ class MyHomePage extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      Text('About Us', style: TextStyle(color: Colors.grey[400], fontSize: 14)),
+                      InkWell(
+                        onTap: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (c) => const AboutPage()));
+                        },
+                        child: Text('About Us', style: TextStyle(color: Colors.grey[400], fontSize: 14)),
+                      ),
                       const SizedBox(height: 8),
-                      Text('Shop', style: TextStyle(color: Colors.grey[400], fontSize: 14)),
+                      InkWell(
+                        onTap: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (c) => const ShopPage()));
+                        },
+                        child: Text('Shop', style: TextStyle(color: Colors.grey[400], fontSize: 14)),
+                      ),
                       const SizedBox(height: 8),
-                      Text('Forum', style: TextStyle(color: Colors.grey[400], fontSize: 14)),
+                      InkWell(
+                        onTap: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (c) => const ForumListPage()));
+                        },
+                        child: Text('Forum', style: TextStyle(color: Colors.grey[400], fontSize: 14)),
+                      ),
                       const SizedBox(height: 8),
-                      Text('News', style: TextStyle(color: Colors.grey[400], fontSize: 14)),
+                      InkWell(
+                        onTap: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (c) => const NewsListPage()));
+                        },
+                        child: Text('News', style: TextStyle(color: Colors.grey[400], fontSize: 14)),
+                      ),
                     ],
                   ),
                 ),

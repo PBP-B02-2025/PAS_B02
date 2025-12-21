@@ -114,6 +114,26 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
 
   // --- MODAL TRANSAKSI (UPDATED) ---
   void _showPurchaseModal(BuildContext context, CookieRequest request) {
+    // Double-check: prevent owners/admins from buying
+    if (isOwner) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Anda tidak dapat membeli produk sendiri"),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+    if (isAdmin) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Admin tidak dapat melakukan transaksi"),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+    
     int quantity = 1;
     final TextEditingController voucherController = TextEditingController();
     final formatter = NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);
