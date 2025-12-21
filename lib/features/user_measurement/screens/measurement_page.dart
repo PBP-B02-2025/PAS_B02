@@ -1,3 +1,4 @@
+import 'package:ballistic/widgets/left_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
@@ -56,6 +57,7 @@ class _UserMeasurementPageState extends State<UserMeasurementPage> {
     final request = context.watch<CookieRequest>();
 
     return Scaffold(
+      drawer: LeftDrawer(),
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: const Color(0xFFC9A25B),
