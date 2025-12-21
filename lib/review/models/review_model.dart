@@ -1,8 +1,6 @@
-import 'user_model.dart';
-
 class ReviewModel {
   final int? id;
-  final User author;          // User object of the reviewer
+  final String author;          // User object of the reviewer
   final String description;   // Review content/comment
   final int star;             // 0-5 rating
   final int productId;        // ID of the product being reviewed
@@ -19,9 +17,9 @@ class ReviewModel {
     return ReviewModel(
       id: json['id'],
       // Handle both nested user object or direct username string
-      author: json['user'] is Map 
-          ? User.fromJson(json['user']) 
-          : User(username: json['author'] ?? json['user'] ?? ''),
+      author: json['user'] is Map
+          ? ReviewModel.fromJson(json['user'])
+          : json['author'] ?? json['user'] ?? '',
       description: json['description'] ?? json['comment'] ?? '',
       star: json['star'] ?? json['rating'] ?? 0,
       // Handle both nested product object or direct product_id
@@ -43,7 +41,7 @@ class ReviewModel {
   /// Create a copy with modified fields
   ReviewModel copyWith({
     int? id,
-    User? author,
+    String? author,
     String? description,
     int? star,
     int? productId,

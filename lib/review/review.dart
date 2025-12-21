@@ -1,6 +1,5 @@
 // Models
 export 'models/review_model.dart';
-export 'models/user_model.dart';
 
 // Widgets
 export 'widgets/star_rating.dart';
