@@ -1,5 +1,6 @@
 import 'package:ballistic/features/user_measurement/screens/measurement_page.dart';
 import 'package:ballistic/forum/screens/forum_entry_list.dart';
+import 'package:ballistic/voucher/screens/voucher_entry_list.dart';
 import 'package:ballistic/widgets/left_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart'; 
@@ -279,9 +280,14 @@ class MyHomePage extends StatelessWidget {
                     MaterialPageRoute(builder: (context) => const ForumListPage()),
                   );
                 } else if (title == 'NEWS') {
-                  Navigator.pushReplacement(
+                  Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const NewsListPage()),
+                  );
+                } else if (title == 'VOUCHER') {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const VoucherEntryListPage()),
                   );
                 }
               },
