@@ -12,6 +12,9 @@
 .swiftpm/
 migrate_working_dir/
 
+# Ignore Documents folder
+Documents/
+
 # IntelliJ related
 *.iml
 *.ipr
