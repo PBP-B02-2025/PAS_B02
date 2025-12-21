@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-// Import halaman Shop agar bisa navigasi ke sana
+// Import halaman Shop
 import 'package:ballistic/shop/screen/shop.dart'; 
+// Import halaman User Measurement
+import 'package:ballistic/features/user_measurement/screens/measurement_page.dart';
 
 class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key});
@@ -72,17 +74,23 @@ class MyHomePage extends StatelessWidget {
             title: const Text('SHOP', style: TextStyle(fontWeight: FontWeight.w500)),
             childrenPadding: const EdgeInsets.only(left: 20),
             children: [
+              // --- NAVIGASI STANDARD SHOP (MOBILE) ---
               ListTile(
                 title: const Text('Standard Shop', style: TextStyle(fontSize: 14)),
                 onTap: () {
-                  Navigator.pop(context);
-                  // Tambahkan navigasi ke shop standard jika sudah ada
+                  Navigator.pop(context); // Tutup Drawer
+                  // Pindah ke ShopPage
+                  Navigator.pushReplacement(
+                    context, 
+                    MaterialPageRoute(builder: (context) => const ShopPage())
+                  );
                 },
               ),
+              // --- NAVIGASI SIZE RECOMMENDATION (MOBILE) ---
               ListTile(
                 title: const Text('Size Recommendation', style: TextStyle(fontSize: 14)),
                 onTap: () {
-                  Navigator.pop(context);
+                  Navigator.pop(context); // Tutup Drawer
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const UserMeasurementPage()),
@@ -107,9 +115,9 @@ class MyHomePage extends StatelessWidget {
       onTap: () {
         Navigator.pop(context); // Tutup drawer
         if (title == 'HOME') {
-           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MyHomePage()));
+           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const MyHomePage()));
         } else if (title == 'SHOP') {
-           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ShopPage()));
+           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const ShopPage()));
         }
       },
     );
@@ -183,10 +191,17 @@ class MyHomePage extends StatelessWidget {
                 ],
               ),
               onSelected: (value) {
+                // --- LOGIKA NAVIGASI DROPDOWN DESKTOP ---
                 if (value == 'size') {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const UserMeasurementPage()),
+                  );
+                } else if (value == 'standard') {
+                  // Navigasi ke Standard Shop
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const ShopPage()),
                   );
                 }
               },
@@ -239,7 +254,7 @@ class MyHomePage extends StatelessWidget {
       constraints: BoxConstraints(minHeight: isMobile ? 350 : 500),
       decoration: BoxDecoration(
         image: DecorationImage(
-          image: const NetworkImage('https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=2070'),
+          image: const NetworkImage('https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?q=80&w=2000'),
           fit: BoxFit.cover,
           colorFilter: ColorFilter.mode(
             Colors.black.withOpacity(0.5),
@@ -272,7 +287,8 @@ class MyHomePage extends StatelessWidget {
             const SizedBox(height: 30),
             ElevatedButton(
               onPressed: () {
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ShopPage()));
+                  // Tombol 'See Collection' langsung ke ShopPage
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const ShopPage()));
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFC9A25B),

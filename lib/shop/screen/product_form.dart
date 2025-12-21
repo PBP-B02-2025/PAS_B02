@@ -1,41 +1,62 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:ballistic/shop/screen/shop.dart';
+import 'package:ballistic/shop/models/product.dart';
 
 class ProductFormPage extends StatefulWidget {
-  const ProductFormPage({super.key});
+  final Product? product; // Jika null = Add, jika ada = Edit
+
+  const ProductFormPage({super.key, this.product});
 
   @override
-  State<ProductFormPage> createState() => _ProductFormPageState();
+  // PERBAIKAN: Nama di sini harus sama dengan nama kelas State di bawah
+  State<ProductFormPage> createState() => _ProductFormPageState(); 
 }
 
+// PERBAIKAN: Mengganti _ProductFlowPageState menjadi _ProductFormPageState
 class _ProductFormPageState extends State<ProductFormPage> {
   final _formKey = GlobalKey<FormState>();
   
-  // Variabel untuk menyimpan input user
-  String _name = "";
-  int _price = 0;
-  String _description = "";
-  String _category = "Shoes"; // Default Value
-  String _size = "";
-  String _brand = "";
-  String _thumbnail = "";
+  // Inisialisasi variabel form
+  late String _name;
+  late int _price;
+  late String _description;
+  late String _category; 
+  late String _size;
+  late String _brand;
+  late String _thumbnail;
 
-  // Warna tema (Gold)
   final Color ballisticGold = const Color(0xFFC9A25B);
-
-  // Daftar Kategori (Sesuaikan dengan CATEGORY_CHOICES di Django models.py kamu)
   List<String> categories = ['Shoes', 'Shirt', 'Water Bottle', 'Helmet'];
+
+  @override
+  void initState() {
+    super.initState();
+    // Jika widget.product tidak null, isi form dengan data produk tersebut (MODE EDIT)
+    _name = widget.product?.name ?? "";
+    _price = widget.product?.price ?? 0;
+    _description = widget.product?.description ?? "";
+    _category = widget.product?.category ?? "Shoes";
+    _size = widget.product?.size ?? "";
+    _brand = widget.product?.brand ?? "";
+    _thumbnail = widget.product?.thumbnail ?? "";
+  }
+
+  String getBaseUrl() {
+    return kIsWeb ? "http://localhost:8000" : "http://10.0.2.2:8000";
+  }
 
   @override
   Widget build(BuildContext context) {
     final request = context.watch<CookieRequest>();
+    bool isEdit = widget.product != null;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add New Product'),
+        title: Text(isEdit ? 'Edit Product' : 'Add New Product'),
         backgroundColor: ballisticGold,
         foregroundColor: Colors.white,
       ),
@@ -44,154 +65,94 @@ class _ProductFormPageState extends State<ProductFormPage> {
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // --- NAMA PRODUK ---
               TextFormField(
-                decoration: InputDecoration(
-                  labelText: "Product Name",
-                  hintText: "Enter product name",
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(5.0)),
-                ),
-                onChanged: (String? value) => setState(() => _name = value!),
-                validator: (String? value) {
-                  if (value == null || value.isEmpty) return "Name cannot be empty!";
-                  return null;
-                },
+                initialValue: _name,
+                decoration: const InputDecoration(labelText: "Product Name", border: OutlineInputBorder()),
+                onChanged: (v) => _name = v,
+                validator: (v) => (v == null || v.isEmpty) ? "Field required" : null,
               ),
               const SizedBox(height: 12),
-
-              // --- HARGA ---
               TextFormField(
-                decoration: InputDecoration(
-                  labelText: "Price",
-                  hintText: "Enter price (number only)",
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(5.0)),
-                ),
+                initialValue: _price == 0 ? "" : _price.toString(),
+                decoration: const InputDecoration(labelText: "Price", border: OutlineInputBorder()),
                 keyboardType: TextInputType.number,
-                onChanged: (String? value) => setState(() => _price = int.tryParse(value!) ?? 0),
-                validator: (String? value) {
-                  if (value == null || value.isEmpty) return "Price cannot be empty!";
-                  if (int.tryParse(value) == null) return "Price must be a number!";
-                  return null;
-                },
+                onChanged: (v) => _price = int.tryParse(v) ?? 0,
+                validator: (v) => (v == null || v.isEmpty) ? "Field required" : null,
               ),
               const SizedBox(height: 12),
-
-              // --- KATEGORI (Dropdown) ---
               DropdownButtonFormField<String>(
-                value: _category,
-                decoration: InputDecoration(
-                  labelText: "Category",
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(5.0)),
-                ),
-                items: categories.map((String category) {
-                  return DropdownMenuItem<String>(
-                    value: category,
-                    child: Text(category),
-                  );
-                }).toList(),
-                onChanged: (String? newValue) => setState(() => _category = newValue!),
+                value: categories.contains(_category) ? _category : categories[0],
+                decoration: const InputDecoration(labelText: "Category", border: OutlineInputBorder()),
+                items: categories.map((c) => DropdownMenuItem(value: c, child: Text(c))).toList(),
+                onChanged: (v) => setState(() => _category = v!),
               ),
               const SizedBox(height: 12),
-
-              // --- BRAND ---
               TextFormField(
-                decoration: InputDecoration(
-                  labelText: "Brand",
-                  hintText: "e.g. Adidas, Nike",
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(5.0)),
-                ),
-                onChanged: (String? value) => setState(() => _brand = value!),
+                initialValue: _brand,
+                decoration: const InputDecoration(labelText: "Brand", border: OutlineInputBorder()),
+                onChanged: (v) => _brand = v,
               ),
               const SizedBox(height: 12),
-
-              // --- SIZE ---
               TextFormField(
-                decoration: InputDecoration(
-                  labelText: "Size",
-                  hintText: "e.g. 42, L, 500ml",
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(5.0)),
-                ),
-                onChanged: (String? value) => setState(() => _size = value!),
+                initialValue: _size,
+                decoration: const InputDecoration(labelText: "Size", border: OutlineInputBorder()),
+                onChanged: (v) => _size = v,
               ),
               const SizedBox(height: 12),
-
-              // --- THUMBNAIL URL ---
               TextFormField(
-                decoration: InputDecoration(
-                  labelText: "Image URL",
-                  hintText: "http://example.com/image.jpg",
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(5.0)),
-                ),
-                onChanged: (String? value) => setState(() => _thumbnail = value!),
+                initialValue: _thumbnail,
+                decoration: const InputDecoration(labelText: "Image URL", border: OutlineInputBorder()),
+                onChanged: (v) => _thumbnail = v,
               ),
               const SizedBox(height: 12),
-
-              // --- DESKRIPSI ---
               TextFormField(
-                decoration: InputDecoration(
-                  labelText: "Description",
-                  hintText: "Product description...",
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(5.0)),
-                ),
+                initialValue: _description,
                 maxLines: 3,
-                onChanged: (String? value) => setState(() => _description = value!),
-                validator: (String? value) {
-                  if (value == null || value.isEmpty) return "Description cannot be empty!";
-                  return null;
-                },
+                decoration: const InputDecoration(labelText: "Description", border: OutlineInputBorder()),
+                onChanged: (v) => _description = v,
+                validator: (v) => (v == null || v.isEmpty) ? "Field required" : null,
               ),
               const SizedBox(height: 24),
-
-              // --- TOMBOL SAVE ---
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: ballisticGold,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                  ),
+                  style: ElevatedButton.styleFrom(backgroundColor: ballisticGold, padding: const EdgeInsets.symmetric(vertical: 16)),
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
-                      // URL Endpoint (Ganti 127.0.0.1 dengan 10.0.2.2 jika pakai Emulator)
-                      // Karena ini POST request authentication, kita pakai package pbp_django_auth
-                      final response = await request.post(
-                        "http://127.0.0.1:8000/shop/add-product-ajax/", 
-                        {
+                      // Tentukan URL: Jika edit gunakan ID produk, jika add gunakan endpoint create
+                      final String url = isEdit 
+                        ? "${getBaseUrl()}/shop/api/edit/${widget.product!.id}/" 
+                        : "${getBaseUrl()}/shop/api/create/";
+                      
+                      final response = await request.postJson(
+                        url, 
+                        jsonEncode(<String, dynamic>{
                           'name': _name,
-                          'price': _price.toString(),
+                          'price': _price,
                           'description': _description,
                           'category': _category,
                           'brand': _brand,
                           'size': _size,
                           'thumbnail': _thumbnail,
-                          'is_featured': 'false', 
-                        }
+                        }),
                       );
 
                       if (context.mounted) {
                         if (response['status'] == 'success') {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text("Produk berhasil disimpan!")),
-                          );
-                          // Kembali ke halaman Shop dan refresh
-                          Navigator.pushReplacement(
-                            context,
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(isEdit ? "Update sukses!" : "Simpan sukses!")));
+                          Navigator.pushAndRemoveUntil(
+                            context, 
                             MaterialPageRoute(builder: (context) => const ShopPage()),
+                            (route) => false
                           );
                         } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text("Gagal: ${response['message']}")),
-                          );
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Gagal: ${response['message']}")));
                         }
                       }
                     }
                   },
-                  child: const Text(
-                    "Save Product",
-                    style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
+                  child: Text(isEdit ? "Update Product" : "Save Product", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                 ),
               ),
             ],
