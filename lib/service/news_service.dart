@@ -7,7 +7,7 @@ class NewsService {
 
   static Future<void> incrementViews(String id) async {
     await http.post(
-      Uri.parse('https://jovian-felix-ballistic.pbp.cs.ui.ac.id/api/news/api/news/$id/view/'),
+      Uri.parse('https://jovian-felix-ballistic.pbp.cs.ui.ac.id/news/api/news/$id/view/'),
     );
   }
 
