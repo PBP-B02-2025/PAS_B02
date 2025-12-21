@@ -11,7 +11,7 @@ import 'package:ballistic/shop/screen/transaction_history.dart';
 // Import baru untuk navigasi
 import 'package:ballistic/forum/screens/forum_entry_list.dart';
 import 'package:ballistic/screens/news/news_list.dart';
->>>>>>>>> Temporary merge branch 2
+import 'package:ballistic/voucher/screens/voucher_entry_list.dart';
 
 class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key});
