@@ -3,11 +3,11 @@ import 'package:http/http.dart' as http;
 import '../models/news.dart';
 
 class NewsService {
-  static const String baseUrl = 'http://127.0.0.1:8000/news/api/news/';
+  static const String baseUrl = 'https://jovian-felix-ballistic.pbp.cs.ui.ac.id/news/api/news/';
 
   static Future<void> incrementViews(String id) async {
     await http.post(
-      Uri.parse('http://127.0.0.1:8000/api/news/$id/view/'),
+      Uri.parse('https://jovian-felix-ballistic.pbp.cs.ui.ac.id/api/news/api/news/$id/view/'),
     );
   }
 

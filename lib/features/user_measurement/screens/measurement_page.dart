@@ -19,7 +19,7 @@ class _UserMeasurementPageState extends State<UserMeasurementPage> {
 
   Future<Measurement?> fetchMeasurement(CookieRequest request) async {
     try {
-      final response = await request.get('http://localhost:8000/measurement/measurementdata/');
+      final response = await request.get('https://jovian-felix-ballistic.pbp.cs.ui.ac.id/measurement/measurementdata/');
       if (response == null || response['status'] == 'error' || response.isEmpty) {
         return null;
       }
@@ -33,7 +33,7 @@ class _UserMeasurementPageState extends State<UserMeasurementPage> {
   Future<List<Product>> fetchRecommendedProducts(CookieRequest request) async {
     try {
       final response = await request.get(
-          'http://localhost:8000/measurement/get-products-json/?type=$selectedType');
+          'https://jovian-felix-ballistic.pbp.cs.ui.ac.id/measurement/get-products-json/?type=$selectedType');
       if (response != null && response['status'] == 'success') {
         List<Product> products = [];
         for (var item in response['products']) {

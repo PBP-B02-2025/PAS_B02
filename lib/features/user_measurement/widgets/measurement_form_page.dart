@@ -102,7 +102,7 @@ class _MeasurementFormPageState extends State<MeasurementFormPage> {
                       };
 
                       final response = await request.post(
-                        "http://localhost:8000/measurement/create-flutter/",
+                        "https://jovian-felix-ballistic.pbp.cs.ui.ac.id/measurement/create-flutter/",
                         jsonEncode(body),
                       );
 

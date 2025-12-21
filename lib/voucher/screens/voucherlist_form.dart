@@ -161,7 +161,7 @@ class _VoucherFormPageState extends State<VoucherFormPage> {
                         // If you using chrome, use URL http://localhost:8000
                         
                         final response = await request.postJson(
-                          "http://localhost:8000/voucher/create-flutter/",
+                          "https://jovian-felix-ballistic.pbp.cs.ui.ac.id/voucher/create-flutter/",
                           jsonEncode({
                             "kode": _code,
                             "deskripsi": _description,

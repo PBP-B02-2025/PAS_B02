@@ -161,7 +161,7 @@ class _ForumEditFormPageState extends State<ForumEditFormPage> {
                           final navigator = Navigator.of(context);
 
                           final response = await request.postJson(
-                            "http://localhost:8000/forum/edit-forum-flutter/",
+                            "https://jovian-felix-ballistic.pbp.cs.ui.ac.id/forum/edit-forum-flutter/",
                             jsonEncode({
                               "forum_id": currentForum.id,
                               "title": titleC.text,

@@ -18,7 +18,7 @@ class ShopPage extends StatefulWidget {
 class _ShopPageState extends State<ShopPage> {
   // Gunakan localhost jika di Chrome, atau 10.0.2.2 jika di Emulator Android
   String get apiUrl => kIsWeb 
-      ? 'http://localhost:8000/shop/api/products/' 
+      ? 'https://jovian-felix-ballistic.pbp.cs.ui.ac.id/shop/api/products/'
       : 'http://10.0.2.2:8000/shop/api/products/';
   
   final Color ballisticGold = const Color(0xFFC9A25B);

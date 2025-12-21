@@ -24,7 +24,7 @@ class MeasurementDetailCard extends StatelessWidget {
 
   Future<void> _deleteData(BuildContext context, CookieRequest request) async {
     final response = await request.post(
-      'http://localhost:8000/measurement/delete/',
+      'https://jovian-felix-ballistic.pbp.cs.ui.ac.id/measurement/delete/',
       {},
     );
 

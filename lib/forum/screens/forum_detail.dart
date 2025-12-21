@@ -60,7 +60,7 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
               final navigator = Navigator.of(context);
               navigator.pop(context);
               final response = await request.postJson(
-                "http://localhost:8000/forum/delete-comment-flutter/",
+                "https://jovian-felix-ballistic.pbp.cs.ui.ac.id/forum/delete-comment-flutter/",
                 jsonEncode({"comment_id": commentId}),
               );
 
