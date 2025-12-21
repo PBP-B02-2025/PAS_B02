@@ -2,6 +2,8 @@ import 'package:ballistic/features/user_measurement/screens/measurement_page.dar
 import 'package:ballistic/forum/screens/forum_entry_list.dart';
 import 'package:ballistic/voucher/screens/voucher_entry_list.dart';
 import 'package:flutter/material.dart';
+import 'package:ballistic/screens/news/news_list.dart';
+
 import 'package:ballistic/screens/menu.dart';
 
 class LeftDrawer extends StatelessWidget {
@@ -82,6 +84,7 @@ class LeftDrawer extends StatelessWidget {
           );
         }
       },
+      
     );
   }
 }

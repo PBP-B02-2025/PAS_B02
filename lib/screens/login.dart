@@ -1,3 +1,4 @@
+import 'package:ballistic/auth/user_session.dart';
 import 'package:ballistic/screens/menu.dart';
 import 'package:ballistic/screens/register.dart';
 import 'package:flutter/material.dart';
@@ -114,6 +115,9 @@ class _LoginPageState extends State<LoginPage> {
                         bool isSuperuser = response['is_superuser'] ?? false;
                         bool isStaff = response['is_staff'] ?? false;
 
+                        UserSession.isLoggedIn = true;
+                        UserSession.username = uname;
+                        UserSession.isAdmin = isSuperuser || isStaff;
                         // Simpan informasi user
                         await UserInfo.saveUserInfo(uname, isSuperuser, isStaff);
 

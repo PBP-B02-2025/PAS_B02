@@ -3,6 +3,7 @@ import 'package:ballistic/forum/screens/forum_entry_list.dart';
 import 'package:ballistic/voucher/screens/voucher_entry_list.dart';
 import 'package:ballistic/widgets/left_drawer.dart';
 import 'package:flutter/material.dart';
+import 'package:ballistic/screens/news/news_list.dart';
 
 class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key});
@@ -183,10 +184,10 @@ class MyHomePage extends StatelessWidget {
       constraints: BoxConstraints(minHeight: isMobile ? 350 : 500),
       decoration: BoxDecoration(
         image: DecorationImage(
-          image: const NetworkImage('https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=2070'),
+          image: const NetworkImage('https://images.unsplash.com/photo-1521412644187-c49fa049e84d?w=800'),
           fit: BoxFit.cover,
           colorFilter: ColorFilter.mode(
-            Colors.black.withOpacity(0.5),
+            Color.fromRGBO(0, 0, 0, 0.5),
             BlendMode.darken,
           ),
         ),
