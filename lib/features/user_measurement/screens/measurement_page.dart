@@ -12,13 +12,12 @@ class UserMeasurementPage extends StatefulWidget {
 }
 
 class _UserMeasurementPageState extends State<UserMeasurementPage> {
-  // Fungsi untuk mengambil data dari backend
+  // Melacak tipe produk yang dipilih: 'clothes' (untuk Shirt) atau 'helmet'
+  String selectedType = 'clothes';
+
   Future<Map<String, dynamic>?> fetchMeasurement(CookieRequest request) async {
     try {
-      // Endpoint ini harus sesuai dengan urls.py di Django kamu yang mengembalikan JSON
       final response = await request.get('http://localhost:8000/measurement/measurementdata/');
-
-      // Jika response mengandung error atau data kosong dari backend
       if (response == null || response['status'] == 'error' || response.isEmpty) {
         return null;
       }
@@ -28,7 +27,20 @@ class _UserMeasurementPageState extends State<UserMeasurementPage> {
     }
   }
 
-  // Fungsi refresh untuk memicu build ulang FutureBuilder
+  // Fungsi baru untuk mengambil rekomendasi produk sesuai filter
+  Future<List<dynamic>> fetchRecommendedProducts(CookieRequest request) async {
+    try {
+      final response = await request.get(
+          'http://localhost:8000/measurement/get-products-json/?type=$selectedType');
+      if (response != null && response['status'] == 'success') {
+        return response['products'] ?? [];
+      }
+      return [];
+    } catch (e) {
+      return [];
+    }
+  }
+
   void refreshPage() {
     setState(() {});
   }
@@ -58,7 +70,6 @@ class _UserMeasurementPageState extends State<UserMeasurementPage> {
                       style: TextStyle(color: Colors.grey)),
                   const SizedBox(height: 30),
 
-                  // SINKRONISASI BACKEND MENGGUNAKAN FUTUREBUILDER
                   FutureBuilder(
                     future: fetchMeasurement(request),
                     builder: (context, snapshot) {
@@ -66,39 +77,149 @@ class _UserMeasurementPageState extends State<UserMeasurementPage> {
                         return const CircularProgressIndicator(color: Colors.black);
                       }
 
-                      // Jika data ada di backend
                       if (snapshot.hasData && snapshot.data != null) {
-                        return MeasurementDetailCard(
-                          data: snapshot.data!, // Kirim data dari Django ke widget detail
-                          onDelete: refreshPage, // Panggil refresh saat data dihapus
-                          onEdit: refreshPage,   // Panggil refresh saat data diubah
+                        return Column(
+                          children: [
+                            MeasurementDetailCard(
+                              data: snapshot.data!,
+                              onDelete: refreshPage,
+                              onEdit: refreshPage,
+                            ),
+                            const SizedBox(height: 40),
+                            const Divider(),
+
+                            // SEKSI REKOMENDASI PRODUK
+                            const SizedBox(height: 20),
+                            const Text("Produk yang Direkomendasikan",
+                                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                            const SizedBox(height: 20),
+
+                            // TOMBOL TOGGLE (SHIRT / HELM)
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                _buildToggleButton("SHIRT", "clothes"),
+                                const SizedBox(width: 12),
+                                _buildToggleButton("HELM", "helmet"),
+                              ],
+                            ),
+                            const SizedBox(height: 30),
+
+                            // GRID DAFTAR PRODUK
+                            FutureBuilder(
+                              future: fetchRecommendedProducts(request),
+                              builder: (context, prodSnapshot) {
+                                if (prodSnapshot.connectionState == ConnectionState.waiting) {
+                                  return const CircularProgressIndicator(color: Colors.black);
+                                }
+
+                                final products = prodSnapshot.data ?? [];
+
+                                if (products.isEmpty) {
+                                  return Container(
+                                    width: double.infinity,
+                                    padding: const EdgeInsets.all(40),
+                                    decoration: BoxDecoration(
+                                      border: Border.all(color: Colors.grey.shade300, style: BorderStyle.solid),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: const Center(
+                                      child: Text("Tidak ada produk yang sesuai ukuranmu.",
+                                          style: TextStyle(color: Colors.grey)),
+                                    ),
+                                  );
+                                }
+
+                                return GridView.builder(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 2,
+                                    childAspectRatio: 0.7,
+                                    crossAxisSpacing: 15,
+                                    mainAxisSpacing: 15,
+                                  ),
+                                  itemCount: products.length,
+                                  itemBuilder: (context, index) {
+                                    final p = products[index];
+                                    return _buildProductCard(p);
+                                  },
+                                );
+                              },
+                            ),
+                          ],
                         );
                       }
 
-                      // Jika data kosong atau error (Tampilan awal/Empty State)
-                      return EmptyStateCard(
-                        onFillNow: refreshPage, // Refresh saat user selesai isi form
-                      );
+                      return EmptyStateCard(onFillNow: refreshPage);
                     },
                   ),
-
-                  const SizedBox(height: 40),
-                  const Divider(),
-                  const Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text("Produk yang Direkomendasikan",
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                  ),
-                  const SizedBox(height: 20),
-
-                  // Text rekomendasi juga bisa dibuat dinamis nanti
-                  const Text("No measurement data found",
-                      style: TextStyle(color: Colors.grey)),
                 ],
               ),
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  // Widget Button Toggle (Hitam jika aktif, Abu jika tidak)
+  Widget _buildToggleButton(String label, String typeValue) {
+    bool isActive = selectedType == typeValue;
+    return ElevatedButton(
+      onPressed: () => setState(() => selectedType = typeValue),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: isActive ? Colors.black : Colors.grey.shade200,
+        foregroundColor: isActive ? Colors.white : Colors.black54,
+        elevation: 0,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+      ),
+      child: Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
+    );
+  }
+
+  // Widget Card Produk sesuai Model Product
+  Widget _buildProductCard(dynamic p) {
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+          side: BorderSide(color: Colors.grey.shade200),
+          borderRadius: BorderRadius.circular(8)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
+              ),
+              child: p['thumbnail'] != null && p['thumbnail'] != ""
+                  ? Image.network(p['thumbnail'], fit: BoxFit.cover)
+                  : const Icon(Icons.image, color: Colors.grey),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(p['name'] ?? "Product",
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                    maxLines: 1, overflow: TextOverflow.ellipsis),
+                Text(p['brand'] ?? "No Brand",
+                    style: const TextStyle(color: Colors.grey, fontSize: 11)),
+                const SizedBox(height: 4),
+                Text("Rp ${p['price']}",
+                    style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
+                Text("Size: ${p['size']}",
+                    style: const TextStyle(fontSize: 10, color: Colors.blueGrey)),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
