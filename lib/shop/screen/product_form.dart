@@ -46,7 +46,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
   }
 
   String getBaseUrl() {
-    return kIsWeb ? "https://jovian-felix-ballistic.pbp.cs.ui.ac.id" : "http://10.0.2.2:8000";
+    return "https://jovian-felix-ballistic.pbp.cs.ui.ac.id";
   }
 
   @override

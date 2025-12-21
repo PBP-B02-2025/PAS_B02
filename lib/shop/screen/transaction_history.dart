@@ -20,7 +20,7 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
   Future<List<Transaction>> fetchHistory(CookieRequest request) async {
     await initializeDateFormatting('id_ID', null);
 
-    final String baseUrl = kIsWeb ? "https://jovian-felix-ballistic.pbp.cs.ui.ac.id" : "http://10.0.2.2:8000";
+    final String baseUrl = "https://jovian-felix-ballistic.pbp.cs.ui.ac.id";
     final response = await request.get("$baseUrl/shop/api/history/");
 
     List<Transaction> listHistory = [];
