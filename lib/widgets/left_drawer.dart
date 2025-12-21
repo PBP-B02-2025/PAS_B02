@@ -1,6 +1,8 @@
 import 'package:ballistic/features/user_measurement/screens/measurement_page.dart';
 import 'package:ballistic/forum/screens/forum_entry_list.dart';
 import 'package:flutter/material.dart';
+import 'package:ballistic/screens/news/news_list.dart';
+
 import 'package:ballistic/screens/menu.dart';
 
 class LeftDrawer extends StatelessWidget {
@@ -74,8 +76,14 @@ class LeftDrawer extends StatelessWidget {
             context,
             MaterialPageRoute(builder: (context) => const ForumListPage())
           );
+        }else if (title == 'NEWS') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const NewsListPage()),
+          );
         }
       },
+      
     );
   }
 }

@@ -1,9 +1,11 @@
+import 'package:ballistic/auth/user_session.dart';
 import 'package:flutter/material.dart';
 import '../../models/news.dart';
 import '../../service/news_service.dart';
 import 'news_detail.dart';
 import 'add_news.dart';
 import 'edit_news.dart';
+import 'package:ballistic/widgets/left_drawer.dart';
 
 class NewsListPage extends StatefulWidget {
   const NewsListPage({super.key});
@@ -66,8 +68,19 @@ class _NewsListPageState extends State<NewsListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+       drawer: const LeftDrawer(),
       appBar: AppBar(
         title: const Text('News'),
+        automaticallyImplyLeading: false,
+          leading: Builder(
+    builder: (context) => IconButton(
+      icon: const Icon(Icons.menu),
+      onPressed: () {
+        Scaffold.of(context).openDrawer();
+      },
+    ),
+  ),
+
         actions: [
             IconButton(
               icon: Icon(
@@ -99,6 +112,7 @@ class _NewsListPageState extends State<NewsListPage> {
           ),
 
           // ➕ ADD
+          if (UserSession.isAdmin)
           IconButton(
             icon: const Icon(Icons.add),
             onPressed: () async {
@@ -218,36 +232,35 @@ class _NewsListPageState extends State<NewsListPage> {
                                     Text('${newsItem.newsViews} views'),
                                   ],
                                 ),
-                                Row(
+                                Row( // edit dan delete 
                                   children: [
-                                    IconButton(
-                                      icon: const Icon(Icons.edit,
-                                          size: 18, color: Colors.blue),
-                                      onPressed: () async {
-                                        final result = await Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (_) =>
-                                                EditNewsPage(news: newsItem),
-                                          ),
-                                        );
-                                        if (result == true) _refreshNews();
-                                      },
-                                    ),
-                                    IconButton(
-                                      icon: const Icon(Icons.delete,
-                                          size: 18, color: Colors.red),
-                                      onPressed: () =>
-                                          _confirmDelete(newsItem),
-                                    ),
+                                    if (UserSession.isAdmin) ...[
+                                      IconButton(
+                                        icon: const Icon(Icons.edit, size: 18, color: Colors.blue),
+                                        onPressed: () async {
+                                          final result = await Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (_) => EditNewsPage(news: newsItem),
+                                            ),
+                                          );
+                                          if (result == true) _refreshNews();
+                                        },
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(Icons.delete,
+                                            size: 18, color: Colors.red),
+                                        onPressed: () => _confirmDelete(newsItem),
+                                      ),
+                                    ],
+
                                     if (newsItem.isFeatured)
                                       Container(
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 8, vertical: 4),
                                         decoration: BoxDecoration(
                                           color: Colors.orange,
-                                          borderRadius:
-                                              BorderRadius.circular(12),
+                                          borderRadius: BorderRadius.circular(12),
                                         ),
                                         child: const Text(
                                           'POPULAR',
@@ -259,6 +272,7 @@ class _NewsListPageState extends State<NewsListPage> {
                                       ),
                                   ],
                                 ),
+
                               ],
                             ),
                           ],

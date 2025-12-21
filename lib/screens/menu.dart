@@ -148,6 +148,11 @@ class MyHomePage extends StatelessWidget {
                     context,
                     MaterialPageRoute(builder: (context) => const ForumListPage()),
                   );
+                } else if (title == 'NEWS') {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const NewsListPage()),
+                  );
                 }
               },
               child: Text(
